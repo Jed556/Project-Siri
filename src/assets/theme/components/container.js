@@ -1,4 +1,4 @@
-// Material Dashboard 2 React base styles
+/*Material Dashboard 2 React base styles*/
 import breakpoints from "assets/theme/base/breakpoints";
 
 // Material Dashboard 2 React helper functions

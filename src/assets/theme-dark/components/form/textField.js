@@ -1,4 +1,4 @@
-// Material Dashboard 2 React Base Styles
+/*Material Dashboard 2 React base styles*/
 import colors from "assets/theme-dark/base/colors";
 
 const { transparent } = colors;

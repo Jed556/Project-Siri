@@ -1,4 +1,4 @@
-// Material Dashboard 2 React Base Styles
+/*Material Dashboard 2 React base styles*/
 import borders from "assets/theme/base/borders";
 
 // Material Dashboard 2 React Helper Functions

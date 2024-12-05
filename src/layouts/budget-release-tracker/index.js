@@ -13,6 +13,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import SheetActionButtons from "examples/Buttons";
 
 import React, { useState } from "react";
 
@@ -120,27 +121,7 @@ function BudgetReleaseTracker() {
                     Add New Row
                   </MDButton>
                 </MDBox>
-                <MDBox pt={3} pb={3} textAlign="center">
-                  <MDButton variant="contained" color="success" onClick={saveAsXLS}>
-                    Save as XLS
-                  </MDButton>
-                  <MDButton
-                    variant="contained"
-                    color="info"
-                    onClick={printForm}
-                    style={{ marginLeft: 10 }}
-                  >
-                    Print
-                  </MDButton>
-                  <MDButton
-                    variant="contained"
-                    color="primary"
-                    onClick={updateDatabase}
-                    style={{ marginLeft: 10 }}
-                  >
-                    Update Database
-                  </MDButton>
-                </MDBox>
+                <SheetActionButtons sheetId="" />
               </MDBox>
             </Card>
           </Grid>

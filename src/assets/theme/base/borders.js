@@ -3,8 +3,7 @@
  * You can add new border width, border color or border radius using this file.
  * You can customized the borders value for the entire Material Dashboard 2 React using thie file.
  */
-
-// Material Dashboard 2 React Base Styles
+/*Material Dashboard 2 React base styles*/
 import colors from "assets/theme/base/colors";
 
 // Material Dashboard 2 React Helper Functions

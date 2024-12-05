@@ -12,6 +12,7 @@ import MDButton from "components/MDButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import SheetActionButtons from "examples/Buttons";
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
@@ -85,44 +86,7 @@ function TrainingCommencement() {
                   Training Details for September 2024
                 </MDTypography>
               </MDBox>
-              <MDBox pt={3} px={2}>
-                <form>
-                  <DataTable
-                    table={{ columns, rows: data }}
-                    entriesPerPage={false}
-                    canSearch={false}
-                    showTotalEntries={false}
-                    isSorted={false}
-                    noEndBorder
-                  />
-                </form>
-                <MDBox pt={3} px={2} textAlign="left">
-                  <MDButton variant="contained" color="secondary" onClick={addNewRow}>
-                    Add New Row
-                  </MDButton>
-                </MDBox>
-                <MDBox pt={3} pb={3} textAlign="center">
-                  <MDButton variant="contained" color="success" onClick={saveAsXLS}>
-                    Save as XLS
-                  </MDButton>
-                  <MDButton
-                    variant="contained"
-                    color="info"
-                    onClick={printForm}
-                    style={{ marginLeft: 10 }}
-                  >
-                    Print
-                  </MDButton>
-                  <MDButton
-                    variant="contained"
-                    color="primary"
-                    onClick={submitToGoogleSheet}
-                    style={{ marginLeft: 10 }}
-                  >
-                    Submit to Google Sheets
-                  </MDButton>
-                </MDBox>
-              </MDBox>
+              <SheetActionButtons sheetId="" />
             </Card>
           </Grid>
         </Grid>

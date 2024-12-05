@@ -13,6 +13,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import SheetActionButtons from "examples/Buttons";
 
 import React, { useState } from "react";
 
@@ -84,77 +85,47 @@ function SiteVisitForm() {
                 </MDTypography>
               </MDBox>
               <MDBox pt={3} px={2}>
-                <form id="siteVisitForm">
-                  <MDBox mb={2}>
-                    <MDTypography variant="h6">Date:</MDTypography>
-                    <MDInput fullWidth type="date" name="date" required />
-                  </MDBox>
-                  <MDBox mb={2}>
-                    <MDTypography variant="h6">School/Company/Organization:</MDTypography>
-                    <MDInput fullWidth name="organization" required />
-                  </MDBox>
-                  <MDBox mb={2}>
-                    <MDTypography variant="h6">Client Attendees</MDTypography>
-                    <DataTable
-                      table={{ columns: clientColumns, rows: clientData }}
-                      entriesPerPage={false}
-                      canSearch={false}
-                      showTotalEntries={false}
-                      isSorted={false}
-                      noEndBorder
-                    />
-                    <MDButton variant="contained" color="secondary" onClick={addClientRow}>
-                      Add Client Row
-                    </MDButton>
-                  </MDBox>
-                  <MDBox mb={2}>
-                    <MDTypography variant="h6">Notes:</MDTypography>
-                    <MDInput fullWidth multiline rows={4} name="notes" />
-                  </MDBox>
-                  <MDBox mb={2}>
-                    <MDTypography variant="h6">Action Items</MDTypography>
-                    <DataTable
-                      table={{ columns: actionColumns, rows: actionData }}
-                      entriesPerPage={false}
-                      canSearch={false}
-                      showTotalEntries={false}
-                      isSorted={false}
-                      noEndBorder
-                    />
-                    <MDButton variant="contained" color="secondary" onClick={addActionRow}>
-                      Add Action Row
-                    </MDButton>
-                  </MDBox>
-                  <MDBox textAlign="center" pb={3}>
-                    <MDButton variant="contained" color="success" onClick={saveToExcel}>
-                      Save to Excel
-                    </MDButton>
-                    <MDButton
-                      variant="contained"
-                      color="info"
-                      onClick={() => window.print()}
-                      style={{ marginLeft: 10 }}
-                    >
-                      Print Form
-                    </MDButton>
-                    <MDButton
-                      variant="contained"
-                      color="primary"
-                      onClick={saveToDatabase}
-                      style={{ marginLeft: 10 }}
-                    >
-                      Save to Database
-                    </MDButton>
-                    <MDButton
-                      variant="contained"
-                      color="warning"
-                      type="reset"
-                      style={{ marginLeft: 10 }}
-                    >
-                      Clear Form
-                    </MDButton>
-                  </MDBox>
-                </form>
+                <MDBox mb={2}>
+                  <MDTypography variant="h6">Date:</MDTypography>
+                  <MDInput fullWidth type="date" name="date" required />
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDTypography variant="h6">School/Company/Organization:</MDTypography>
+                  <MDInput fullWidth name="organization" required />
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDTypography variant="h6">Client Attendees</MDTypography>
+                  <DataTable
+                    table={{ columns: clientColumns, rows: clientData }}
+                    entriesPerPage={false}
+                    canSearch={false}
+                    showTotalEntries={false}
+                    isSorted={false}
+                    noEndBorder
+                  />
+                  <MDButton variant="contained" color="secondary" onClick={addClientRow}>
+                    Add Client Row
+                  </MDButton>
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDTypography variant="h6">Notes:</MDTypography>
+                  <MDInput fullWidth multiline rows={4} name="notes" />
+                </MDBox>
+                <MDBox mb={2}>
+                  <MDTypography variant="h6">Action Items</MDTypography>
+                  <DataTable
+                    table={{ columns: actionColumns, rows: actionData }}
+                    entriesPerPage={false}
+                    canSearch={false}
+                    showTotalEntries={false}
+                    isSorted={false}
+                    noEndBorder
+                  />
+                  <MDButton variant="contained" color="secondary" onClick={addActionRow}>
+                    Add Action Row
+                  </MDButton>
+                </MDBox>
+                <SheetActionButtons sheetId="" />
               </MDBox>
             </Card>
           </Grid>

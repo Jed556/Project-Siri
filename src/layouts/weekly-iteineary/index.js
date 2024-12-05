@@ -13,6 +13,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import SheetActionButtons from "examples/Buttons";
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
@@ -136,27 +137,7 @@ function WeeklyIteineary() {
                   />
                 </MDBox>
               ))}
-              <MDBox py={3} px={2} textAlign="center">
-                <MDButton variant="contained" color="success" onClick={handleSubmit}>
-                  Submit
-                </MDButton>
-                <MDButton
-                  variant="contained"
-                  color="info"
-                  onClick={() => alert("Edit clicked")}
-                  style={{ marginLeft: 10 }}
-                >
-                  Edit
-                </MDButton>
-                <MDButton
-                  variant="contained"
-                  color="primary"
-                  onClick={() => window.print()}
-                  style={{ marginLeft: 10 }}
-                >
-                  Print
-                </MDButton>
-              </MDBox>
+              <SheetActionButtons sheetId="" />
             </Card>
           </Grid>
         </Grid>

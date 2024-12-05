@@ -1,4 +1,4 @@
-// Material Dashboard 2 React base styles
+/*Material Dashboard 2 React base styles*/
 import typography from "assets/theme/base/typography";
 
 // Material Dashboard 2 React helper functions

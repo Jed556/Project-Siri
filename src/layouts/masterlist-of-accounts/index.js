@@ -14,6 +14,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import SheetActionButtons from "examples/Buttons";
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
@@ -93,27 +94,7 @@ function MasterlistOfAccounts() {
                     Add New Row
                   </MDButton>
                 </MDBox>
-                <MDBox pt={3} pb={3} textAlign="center">
-                  <MDButton variant="contained" color="success" onClick={saveAsXLS}>
-                    Save as XLS
-                  </MDButton>
-                  <MDButton
-                    variant="contained"
-                    color="info"
-                    onClick={printForm}
-                    style={{ marginLeft: 10 }}
-                  >
-                    Print
-                  </MDButton>
-                  <MDButton
-                    variant="contained"
-                    color="primary"
-                    onClick={submitToGoogleSheet}
-                    style={{ marginLeft: 10 }}
-                  >
-                    Submit to Google Sheets
-                  </MDButton>
-                </MDBox>
+                <SheetActionButtons sheetId="" />
               </MDBox>
             </Card>
           </Grid>

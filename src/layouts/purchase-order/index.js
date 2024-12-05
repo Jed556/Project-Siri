@@ -14,6 +14,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import SheetActionButtons from "examples/Buttons";
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
@@ -89,40 +90,38 @@ function PurchaseOrder() {
                 </MDTypography>
               </MDBox>
               <MDBox py={3} px={2}>
-                <form id="purchaseOrderForm">
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <MDInput fullWidth label="P.O. #" />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <MDInput
-                        fullWidth
-                        type="text"
-                        label="Date"
-                        onFocus={(e) => (e.target.type = "date")}
-                        onBlur={(e) => (e.target.type = "text")}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <MDInput fullWidth label="Payment Terms" />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <MDInput fullWidth label="Supplier Name" />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <MDInput fullWidth label="Address" />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <MDInput fullWidth label="Delivery" />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <MDInput fullWidth label="Attention" />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <MDInput fullWidth label="Pick-Up/Look For" />
-                    </Grid>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <MDInput fullWidth label="P.O. #" />
                   </Grid>
-                </form>
+                  <Grid item xs={12} md={6}>
+                    <MDInput
+                      fullWidth
+                      type="text"
+                      label="Date"
+                      onFocus={(e) => (e.target.type = "date")}
+                      onBlur={(e) => (e.target.type = "text")}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <MDInput fullWidth label="Payment Terms" />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <MDInput fullWidth label="Supplier Name" />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <MDInput fullWidth label="Address" />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <MDInput fullWidth label="Delivery" />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <MDInput fullWidth label="Attention" />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <MDInput fullWidth label="Pick-Up/Look For" />
+                  </Grid>
+                </Grid>
               </MDBox>
             </Card>
           </Grid>
@@ -190,30 +189,7 @@ function PurchaseOrder() {
                 </Grid>
               </MDBox>
             </Card>
-            <MDBox pt={3} pb={3} textAlign="center">
-              <MDButton variant="contained" color="success" onClick={saveForm}>
-                Save
-              </MDButton>
-              <MDButton
-                variant="contained"
-                color="info"
-                onClick={() => window.print()}
-                style={{ marginLeft: 10 }}
-              >
-                Print
-              </MDButton>
-              <MDButton variant="contained" color="primary" type="reset" style={{ marginLeft: 10 }}>
-                Clear
-              </MDButton>
-              <MDButton
-                variant="contained"
-                color="primary"
-                type="submit"
-                style={{ marginLeft: 10 }}
-              >
-                Submit
-              </MDButton>
-            </MDBox>
+            <SheetActionButtons sheetId="" />
           </Grid>
         </Grid>
       </MDBox>

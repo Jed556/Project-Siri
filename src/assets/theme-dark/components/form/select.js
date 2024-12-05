@@ -1,4 +1,4 @@
-// Material Dashboard 2 React base styles
+/*Material Dashboard 2 React base styles*/
 import colors from "assets/theme-dark/base/colors";
 
 // Material Dashboard 2 React helper functions
