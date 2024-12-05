@@ -28,6 +28,27 @@ function TrainingCommencement() {
         setRows([...rows, {}]);
     };
 
+    const handleInputChange = (index, field, value) => {
+        const updatedRows = rows.map((row, i) => (i === index ? { ...row, [field]: value } : row));
+        setRows(updatedRows);
+    };
+
+    function formatTableData() {
+        return {
+            name: "Training_Commencement",
+            rows: rows.map((row) => ({
+                Account: row.account || "",
+                Training: row.training || "",
+                "Training Date": row.trainingDate || "",
+                "No. of Days": row.noOfDays || "",
+                Inclusions: row.inclusions || "",
+                "Official Rate": row.officialRate || "",
+                "Fees Breakdown": row.feesBreakdown || "",
+                Remarks: row.remarks || "",
+            })),
+        };
+    }
+
     const columns = [
         { Header: "ACCOUNT", accessor: "account" },
         { Header: "TRAINING", accessor: "training" },
@@ -39,15 +60,73 @@ function TrainingCommencement() {
         { Header: "REMARKS", accessor: "remarks" },
     ];
 
-    const data = rows.map((_, index) => ({
-        account: <MDInput fullWidth placeholder="Account" />,
-        training: <MDInput fullWidth placeholder="Training" />,
-        trainingDate: <MDInput fullWidth type="date" />,
-        noOfDays: <MDInput fullWidth type="number" placeholder="No. of Days" />,
-        inclusions: <MDInput fullWidth placeholder="Inclusions" />,
-        officialRate: <MDInput fullWidth type="number" placeholder="Official Rate" />,
-        feesBreakdown: <MDInput fullWidth placeholder="Fees Breakdown" />,
-        remarks: <MDInput fullWidth placeholder="Remarks" />,
+    const data = rows.map((row, index) => ({
+        account: (
+            <MDInput
+                fullWidth
+                placeholder="Account"
+                value={row.account || ""}
+                onChange={(e) => handleInputChange(index, "account", e.target.value)}
+            />
+        ),
+        training: (
+            <MDInput
+                fullWidth
+                placeholder="Training"
+                value={row.training || ""}
+                onChange={(e) => handleInputChange(index, "training", e.target.value)}
+            />
+        ),
+        trainingDate: (
+            <MDInput
+                fullWidth
+                type="date"
+                value={row.trainingDate || ""}
+                onChange={(e) => handleInputChange(index, "trainingDate", e.target.value)}
+            />
+        ),
+        noOfDays: (
+            <MDInput
+                fullWidth
+                type="number"
+                placeholder="No. of Days"
+                value={row.noOfDays || ""}
+                onChange={(e) => handleInputChange(index, "noOfDays", e.target.value)}
+            />
+        ),
+        inclusions: (
+            <MDInput
+                fullWidth
+                placeholder="Inclusions"
+                value={row.inclusions || ""}
+                onChange={(e) => handleInputChange(index, "inclusions", e.target.value)}
+            />
+        ),
+        officialRate: (
+            <MDInput
+                fullWidth
+                type="number"
+                placeholder="Official Rate"
+                value={row.officialRate || ""}
+                onChange={(e) => handleInputChange(index, "officialRate", e.target.value)}
+            />
+        ),
+        feesBreakdown: (
+            <MDInput
+                fullWidth
+                placeholder="Fees Breakdown"
+                value={row.feesBreakdown || ""}
+                onChange={(e) => handleInputChange(index, "feesBreakdown", e.target.value)}
+            />
+        ),
+        remarks: (
+            <MDInput
+                fullWidth
+                placeholder="Remarks"
+                value={row.remarks || ""}
+                onChange={(e) => handleInputChange(index, "remarks", e.target.value)}
+            />
+        ),
     }));
 
     return (
@@ -87,7 +166,7 @@ function TrainingCommencement() {
                                     Add New Row
                                 </MDButton>
                             </MDBox>
-                            <SheetActionButtons sheetId="" />
+                            <SheetActionButtons sheetId="" data={formatTableData()} />
                         </Card>
                     </Grid>
                 </Grid>
