@@ -14,7 +14,22 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-function SheetActionButtons() {
+// Data
+// Data sources goes here
+
+function handleSubmit() {
+    alert("Form submitted");
+}
+
+function handleDownload() {
+    alert("Download clicked");
+}
+
+function handlePrint() {
+    window.print();
+}
+
+function SheetActionButtons(sheetId, data) {
     return (
         <MDBox py={3} px={2} textAlign="center">
             <MDButton variant="contained" color="success" onClick={handleSubmit}>
@@ -23,7 +38,7 @@ function SheetActionButtons() {
             <MDButton
                 variant="contained"
                 color="info"
-                onClick={() => alert("Edit clicked")}
+                onClick={handleDownload}
                 style={{ marginLeft: 10 }}
             >
                 Download XLS
@@ -31,7 +46,7 @@ function SheetActionButtons() {
             <MDButton
                 variant="contained"
                 color="primary"
-                onClick={() => window.print()}
+                onClick={handlePrint}
                 style={{ marginLeft: 10 }}
             >
                 Print
