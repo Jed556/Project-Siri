@@ -24,8 +24,6 @@ import { format } from "prettier";
 import { func } from "prop-types";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useMaterialUIController } from "context";
 
 function WeeklyIteineary() {
     const { columns, rows } = authorsTableData();
