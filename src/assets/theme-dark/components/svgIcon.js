@@ -2,23 +2,23 @@
 import pxToRem from "assets/theme-dark/functions/pxToRem";
 
 const svgIcon = {
-  defaultProps: {
-    fontSize: "inherit",
-  },
-
-  styleOverrides: {
-    fontSizeInherit: {
-      fontSize: "inherit !important",
+    defaultProps: {
+        fontSize: "inherit",
     },
 
-    fontSizeSmall: {
-      fontSize: `${pxToRem(20)} !important`,
-    },
+    styleOverrides: {
+        fontSizeInherit: {
+            fontSize: "inherit !important",
+        },
 
-    fontSizeLarge: {
-      fontSize: `${pxToRem(36)} !important`,
+        fontSizeSmall: {
+            fontSize: `${pxToRem(20)} !important`,
+        },
+
+        fontSizeLarge: {
+            fontSize: `${pxToRem(36)} !important`,
+        },
     },
-  },
 };
 
 export default svgIcon;

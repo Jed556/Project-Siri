@@ -1,7 +1,7 @@
 const buttonBase = {
-  defaultProps: {
-    disableRipple: false,
-  },
+    defaultProps: {
+        disableRipple: false,
+    },
 };
 
 export default buttonBase;

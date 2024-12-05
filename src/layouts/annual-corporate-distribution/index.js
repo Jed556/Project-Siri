@@ -15,12 +15,13 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import SheetActionButtons from "examples/Buttons";
 
-//    Data
-// Data sources goes here
+// Data
+import authorsTableData from "layouts/tables/data/authorsTableData";
+import projectsTableData from "layouts/tables/data/projectsTableData";
 
 import { useState } from "react";
 
-function BudgetRequest() {
+function AnnualCorporateDistributionList() {
     const [rows, setRows] = useState([{}]);
 
     const addNewRow = () => {
@@ -28,25 +29,29 @@ function BudgetRequest() {
     };
 
     const columns = [
-        { Header: "Category", accessor: "category" },
-        { Header: "Mon", accessor: "mon" },
-        { Header: "Tue", accessor: "tue" },
-        { Header: "Wed", accessor: "wed" },
-        { Header: "Thu", accessor: "thu" },
-        { Header: "Fri", accessor: "fri" },
-        { Header: "Sat", accessor: "sat" },
-        { Header: "Sun", accessor: "sun" },
+        { Header: "No.", accessor: "no" },
+        { Header: "Company", accessor: "company" },
+        { Header: "Recipient / Name", accessor: "recipient" },
+        { Header: "Designation", accessor: "designation" },
+        { Header: "Category 1 (Type A)", accessor: "category1TypeA" },
+        { Header: "Category 1 (Type B)", accessor: "category1TypeB" },
+        { Header: "Category 1 (Type C)", accessor: "category1TypeC" },
+        { Header: "Category 2 (Type A)", accessor: "category2TypeA" },
+        { Header: "Category 2 (Type B)", accessor: "category2TypeB" },
+        { Header: "Category 2 (Type C)", accessor: "category2TypeC" },
     ];
 
     const data = rows.map((row, index) => ({
-        category: <MDInput fullWidth />,
-        mon: <MDInput fullWidth />,
-        tue: <MDInput fullWidth />,
-        wed: <MDInput fullWidth />,
-        thu: <MDInput fullWidth />,
-        fri: <MDInput fullWidth />,
-        sat: <MDInput fullWidth />,
-        sun: <MDInput fullWidth />,
+        no: <MDInput fullWidth />,
+        company: <MDInput fullWidth />,
+        recipient: <MDInput fullWidth />,
+        designation: <MDInput fullWidth />,
+        category1TypeA: <MDInput fullWidth />,
+        category1TypeB: <MDInput fullWidth />,
+        category1TypeC: <MDInput fullWidth />,
+        category2TypeA: <MDInput fullWidth />,
+        category2TypeB: <MDInput fullWidth />,
+        category2TypeC: <MDInput fullWidth />,
     }));
 
     return (
@@ -67,7 +72,7 @@ function BudgetRequest() {
                                 coloredShadow="info"
                             >
                                 <MDTypography variant="h6" color="white">
-                                    Budget Request Form
+                                    Annual Corporate Distribution List
                                 </MDTypography>
                             </MDBox>
                             <MDBox pt={3} px={2}>
@@ -80,7 +85,7 @@ function BudgetRequest() {
                                 />
                             </MDBox>
                             <MDBox
-                                pt={3}
+                                py={3}
                                 px={3}
                                 display="flex"
                                 justifyContent="space-between"
@@ -89,6 +94,22 @@ function BudgetRequest() {
                                 <MDButton variant="contained" color="secondary" onClick={addNewRow}>
                                     Add New Row
                                 </MDButton>
+                            </MDBox>
+                            <MDBox pt={3} px={2}>
+                                <Grid container spacing={3}>
+                                    <Grid item xs={12} md={6}>
+                                        <MDInput
+                                            fullWidth
+                                            label="Total Initial Request (AE Name)"
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <MDInput fullWidth label="Add: Contingency" />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <MDInput fullWidth label="Overall Total" />
+                                    </Grid>
+                                </Grid>
                             </MDBox>
                             <SheetActionButtons sheetId="" />
                         </Card>
@@ -100,4 +121,4 @@ function BudgetRequest() {
     );
 }
 
-export default BudgetRequest;
+export default AnnualCorporateDistributionList;

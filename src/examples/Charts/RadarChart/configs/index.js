@@ -14,25 +14,25 @@ Coded by www.creative-tim.com
 */
 
 function configs(labels, datasets) {
-  return {
-    data: {
-      labels,
-      datasets: [...datasets],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false,
+    return {
+        data: {
+            labels,
+            datasets: [...datasets],
         },
-      },
-      interaction: {
-        intersect: false,
-        mode: "index",
-      },
-    },
-  };
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+            },
+            interaction: {
+                intersect: false,
+                mode: "index",
+            },
+        },
+    };
 }
 
 export default configs;

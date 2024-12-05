@@ -18,16 +18,15 @@ import DataTable from "examples/Tables/DataTable";
 // Data sources goes here
 
 function Blank() {
-  return (
-    <DashboardLayout>
-      <DashboardNavbar />
-      <MDBox pt={6} pb={3}>
-        <Grid container spacing={6}>
-        </Grid>
-      </MDBox>
-      <Footer />
-    </DashboardLayout>
-  );
+    return (
+        <DashboardLayout>
+            <DashboardNavbar />
+            <MDBox pt={6} pb={3}>
+                <Grid container spacing={6}></Grid>
+            </MDBox>
+            <Footer />
+        </DashboardLayout>
+    );
 }
 
 export default Blank;

@@ -1,4 +1,4 @@
-/*Material Dashboard 2 React base styles*/
+// Material Dashboard 2 React base styles
 import colors from "assets/theme-dark/base/colors";
 import typography from "assets/theme-dark/base/typography";
 
@@ -9,59 +9,59 @@ const { transparent, light, info, secondary } = colors;
 const { size } = typography;
 
 const outlined = {
-  base: {
-    minHeight: pxToRem(39),
-    color: light.main,
-    borderColor: light.main,
-    padding: `${pxToRem(9)} ${pxToRem(24)}`,
+    base: {
+        minHeight: pxToRem(39),
+        color: light.main,
+        borderColor: light.main,
+        padding: `${pxToRem(9)} ${pxToRem(24)}`,
 
-    "&:hover": {
-      opacity: 0.75,
-      backgroundColor: transparent.main,
+        "&:hover": {
+            opacity: 0.75,
+            backgroundColor: transparent.main,
+        },
+
+        "& .material-icon, .material-icons-round, svg": {
+            fontSize: `${pxToRem(16)} !important`,
+        },
     },
 
-    "& .material-icon, .material-icons-round, svg": {
-      fontSize: `${pxToRem(16)} !important`,
+    small: {
+        minHeight: pxToRem(31),
+        padding: `${pxToRem(6)} ${pxToRem(18)}`,
+        fontSize: size.xs,
+
+        "& .material-icon, .material-icons-round, svg": {
+            fontSize: `${pxToRem(12)} !important`,
+        },
     },
-  },
 
-  small: {
-    minHeight: pxToRem(31),
-    padding: `${pxToRem(6)} ${pxToRem(18)}`,
-    fontSize: size.xs,
+    large: {
+        minHeight: pxToRem(46),
+        padding: `${pxToRem(12)} ${pxToRem(64)}`,
+        fontSize: size.sm,
 
-    "& .material-icon, .material-icons-round, svg": {
-      fontSize: `${pxToRem(12)} !important`,
+        "& .material-icon, .material-icons-round, svg": {
+            fontSize: `${pxToRem(22)} !important`,
+        },
     },
-  },
 
-  large: {
-    minHeight: pxToRem(46),
-    padding: `${pxToRem(12)} ${pxToRem(64)}`,
-    fontSize: size.sm,
+    primary: {
+        backgroundColor: transparent.main,
+        borderColor: info.main,
 
-    "& .material-icon, .material-icons-round, svg": {
-      fontSize: `${pxToRem(22)} !important`,
+        "&:hover": {
+            backgroundColor: transparent.main,
+        },
     },
-  },
 
-  primary: {
-    backgroundColor: transparent.main,
-    borderColor: info.main,
+    secondary: {
+        backgroundColor: transparent.main,
+        borderColor: secondary.main,
 
-    "&:hover": {
-      backgroundColor: transparent.main,
+        "&:hover": {
+            backgroundColor: transparent.main,
+        },
     },
-  },
-
-  secondary: {
-    backgroundColor: transparent.main,
-    borderColor: secondary.main,
-
-    "&:hover": {
-      backgroundColor: transparent.main,
-    },
-  },
 };
 
 export default outlined;
