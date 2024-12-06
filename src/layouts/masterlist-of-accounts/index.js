@@ -27,18 +27,6 @@ function MasterlistOfAccounts() {
         setRows([...rows, {}]);
     };
 
-    const saveAsXLS = () => {
-        // Implement save as XLS functionality
-    };
-
-    const printForm = () => {
-        window.print();
-    };
-
-    const submitToGoogleSheet = () => {
-        // Implement submit to Google Sheets functionality
-    };
-
     const columns = [
         { Header: "ACCOUNT", accessor: "account" },
         { Header: "CONTACT PERSON", accessor: "contactPerson" },
