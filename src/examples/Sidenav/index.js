@@ -57,8 +57,8 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
         }
 
         /** 
-     The event listener that's calling the handleMiniSidenav function when resizing the window.
-    */
+         The event listener that's calling the handleMiniSidenav function when resizing the window.
+        */
         window.addEventListener("resize", handleMiniSidenav);
 
         // Call the handleMiniSidenav function to set the state with the initial value.
