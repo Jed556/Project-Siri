@@ -195,7 +195,7 @@ function Notifications() {
                     </Grid>
                 </Grid>
             </MDBox>
-            <Footer />
+            <Footer company={configs.footer.company} />
         </DashboardLayout>
     );
 }

@@ -24,7 +24,7 @@ function Blank() {
             <MDBox pt={6} pb={3}>
                 <Grid container spacing={6}></Grid>
             </MDBox>
-            <Footer />
+            <Footer company={configs.footer.company} />
         </DashboardLayout>
     );
 }

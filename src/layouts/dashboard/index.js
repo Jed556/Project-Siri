@@ -11,6 +11,7 @@ import Footer from "examples/Footer";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
+import configs from "config";
 
 // Data
 import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
@@ -22,6 +23,7 @@ import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 
 function Dashboard() {
     const { sales, tasks } = reportsLineChartData;
+    console.log(configs.footer.company);
 
     return (
         <DashboardLayout>
@@ -140,7 +142,7 @@ function Dashboard() {
                     </Grid>
                 </MDBox> */}
             </MDBox>
-            <Footer />
+            <Footer company={configs.footer.company} />
         </DashboardLayout>
     );
 }

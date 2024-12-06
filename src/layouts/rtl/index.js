@@ -153,7 +153,7 @@ function RTL() {
                     </Grid>
                 </MDBox>
             </MDBox>
-            <Footer />
+            <Footer company={configs.footer.company} />
         </DashboardLayout>
     );
 }

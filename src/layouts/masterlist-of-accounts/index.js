@@ -15,7 +15,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import SheetActionButtons from "examples/Buttons/SheetActionButtons";
-
+import configs from "config";
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
@@ -85,7 +85,7 @@ function MasterlistOfAccounts() {
                     </Grid>
                 </Grid>
             </MDBox>
-            <Footer />
+            <Footer company={configs.footer.company} />
         </DashboardLayout>
     );
 }

@@ -15,7 +15,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import SheetActionButtons from "examples/Buttons/SheetActionButtons";
-
+import configs from "config";
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
@@ -71,7 +71,7 @@ function PurchaseOrder() {
     return (
         <DashboardLayout>
             <DashboardNavbar />
-            <MDBox pt={6} pb={3}>
+            <MDBox pt={6} pb={0}>
                 <Grid container spacing={6}>
                     <Grid item xs={12}>
                         <Card>
@@ -195,7 +195,8 @@ function PurchaseOrder() {
                     </Grid>
                 </Grid>
             </MDBox>
-            <Footer />
+            <Footer company={configs.footer.company} />
+
             <MDSnackbar
                 color={snackbar.color}
                 icon={snackbar.color === "success" ? "check" : "error"}

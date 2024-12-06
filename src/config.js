@@ -1,6 +1,9 @@
 const configs = {
     footer: {
-        company: "DevSol  | lcg",
+        company: {
+            name: "DevSol  | lcg",
+            href: "",
+        },
     },
 };
 
