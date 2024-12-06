@@ -12,7 +12,7 @@ import MDButton from "components/MDButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import SheetActionButtons from "examples/Buttons";
+import SheetActionButtons from "examples/Buttons/SheetActionButtons";
 
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";

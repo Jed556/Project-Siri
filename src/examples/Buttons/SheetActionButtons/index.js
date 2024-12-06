@@ -79,7 +79,7 @@ function handlePrint(data) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = data.name || "WeeklyItinerary.xlsx";
+    a.download = data.name || `Siri_${new Date().toISOString().slice(0, 10)}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
 }
