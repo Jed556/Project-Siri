@@ -56,10 +56,10 @@ const routes = [
     },
     {
         type: "collapse",
-        name: "Weekly Itenearary",
-        key: "form/weekly-iteineary",
+        name: "Weekly Itinerary",
+        key: "form/weekly-itinerary",
         icon: <Icon fontSize="small">table_view</Icon>,
-        route: "/form/weekly-iteineary",
+        route: "/form/weekly-itinerary",
         component: <WeeklyIteineary />,
     },
     {

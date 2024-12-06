@@ -25,27 +25,49 @@ import { func } from "prop-types";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 
-function WeeklyIteineary() {
+function WeeklyItinerary() {
     const { columns, rows } = authorsTableData();
-    const [week, setWeek] = useState("");
-    const [objectives, setObjectives] = useState("");
-    const [deadlines, setDeadlines] = useState("");
-    const [dailyRemarks, setDailyRemarks] = useState({
-        Monday: { date: "", remarks: "" },
-        Tuesday: { date: "", remarks: "" },
-        Wednesday: { date: "", remarks: "" },
-        Thursday: { date: "", remarks: "" },
-        Friday: { date: "", remarks: "" },
-        Saturday: { date: "", remarks: "" },
+    const [state, setState] = useState({
+        week: "",
+        objectives: "",
+        deadlines: "",
+        dailyRemarks: {
+            Monday: { date: "", remarks: "" },
+            Tuesday: { date: "", remarks: "" },
+            Wednesday: { date: "", remarks: "" },
+            Thursday: { date: "", remarks: "" },
+            Friday: { date: "", remarks: "" },
+            Saturday: { date: "", remarks: "" },
+        },
     });
+
+    const handleInputChange = (field, value, day = null) => {
+        if (day) {
+            setState((prevState) => ({
+                ...prevState,
+                dailyRemarks: {
+                    ...prevState.dailyRemarks,
+                    [day]: {
+                        ...prevState.dailyRemarks[day],
+                        [field]: value,
+                    },
+                },
+            }));
+        } else {
+            setState((prevState) => ({
+                ...prevState,
+                [field]: value,
+            }));
+        }
+    };
 
     function formatTableData() {
         return {
-            name: `Weekly_Itinerary_${week}`,
-            rows: Object.keys(dailyRemarks).map((day) => ({
+            name: `Weekly_Itinerary_${state.week}`,
+            rows: Object.keys(state.dailyRemarks).map((day) => ({
                 Day: day,
-                Date: dailyRemarks[day].date,
-                Remarks: dailyRemarks[day].remarks,
+                Date: state.dailyRemarks[day].date,
+                Remarks: state.dailyRemarks[day].remarks,
             })),
         };
     }
@@ -90,8 +112,8 @@ function WeeklyIteineary() {
                                 <MDInput
                                     fullWidth
                                     placeholder="Enter week"
-                                    value={week}
-                                    onChange={(e) => setWeek(e.target.value)}
+                                    value={state.week}
+                                    onChange={(e) => handleInputChange("week", e.target.value)}
                                 />
                             </MDBox>
                             <MDBox pt={3} px={2}>
@@ -101,8 +123,10 @@ function WeeklyIteineary() {
                                     multiline
                                     rows={4}
                                     placeholder="Enter your weekly objectives here..."
-                                    value={objectives}
-                                    onChange={(e) => setObjectives(e.target.value)}
+                                    value={state.objectives}
+                                    onChange={(e) =>
+                                        handleInputChange("objectives", e.target.value)
+                                    }
                                 />
                             </MDBox>
                             <MDBox pt={3} px={2}>
@@ -112,8 +136,8 @@ function WeeklyIteineary() {
                                     multiline
                                     rows={4}
                                     placeholder="Enter your deadlines here..."
-                                    value={deadlines}
-                                    onChange={(e) => setDeadlines(e.target.value)}
+                                    value={state.deadlines}
+                                    onChange={(e) => handleInputChange("deadlines", e.target.value)}
                                 />
                             </MDBox>
                             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -130,15 +154,9 @@ function WeeklyIteineary() {
                                             {day.toUpperCase()}
                                         </MDTypography>
                                         <DatePicker
-                                            value={dailyRemarks[day].date}
+                                            value={state.dailyRemarks[day].date}
                                             onChange={(date) =>
-                                                setDailyRemarks({
-                                                    ...dailyRemarks,
-                                                    [day]: {
-                                                        ...dailyRemarks[day],
-                                                        date: date,
-                                                    },
-                                                })
+                                                handleInputChange("date", date, day)
                                             }
                                             shouldDisableDate={(date) => !isValidDate(day, date)}
                                             renderInput={(params) => (
@@ -150,15 +168,9 @@ function WeeklyIteineary() {
                                             multiline
                                             rows={2}
                                             placeholder="Remarks"
-                                            value={dailyRemarks[day].remarks}
+                                            value={state.dailyRemarks[day].remarks}
                                             onChange={(e) =>
-                                                setDailyRemarks({
-                                                    ...dailyRemarks,
-                                                    [day]: {
-                                                        ...dailyRemarks[day],
-                                                        remarks: e.target.value,
-                                                    },
-                                                })
+                                                handleInputChange("remarks", e.target.value, day)
                                             }
                                         />
                                     </MDBox>
@@ -174,4 +186,4 @@ function WeeklyIteineary() {
     );
 }
 
-export default WeeklyIteineary;
+export default WeeklyItinerary;
