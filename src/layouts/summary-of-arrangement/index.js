@@ -81,25 +81,19 @@ function SummaryOfArrangement() {
                                     Summary of Arrangements
                                 </MDTypography>
                             </MDBox>
-                            <MDBox pt={3} px={2}>
+                            <MDBox pt={2} px={2}>
                                 <DataTable
                                     table={{ columns, rows: data }}
-                                    entriesPerPage={false}
-                                    canSearch={false}
-                                    showTotalEntries={false}
                                     isSorted={false}
+                                    entriesPerPage={false}
+                                    showTotalEntries={false}
                                     noEndBorder
                                 />
-                                <MDBox pt={3} px={2} textAlign="left">
-                                    <MDButton
-                                        variant="contained"
-                                        color="secondary"
-                                        onClick={addNewRow}
-                                    >
-                                        Add New Row
-                                    </MDButton>
-                                </MDBox>
-                                <SheetActionButtons sheetId="" />
+                            </MDBox>
+                            <MDBox py={3} px={2} textAlign="left">
+                                <MDButton variant="contained" color="secondary" onClick={addNewRow}>
+                                    Add New Row
+                                </MDButton>
                             </MDBox>
                         </Card>
                     </Grid>

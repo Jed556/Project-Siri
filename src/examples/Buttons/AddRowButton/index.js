@@ -14,9 +14,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-import { utils, writeFile } from "xlsx";
 import PropTypes from "prop-types";
-
 
 function AddRowButton({ rows }) {
     const handleAddRow = () => {

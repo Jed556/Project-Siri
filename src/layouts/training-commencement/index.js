@@ -150,16 +150,14 @@ function TrainingCommencement() {
                                     Training Details
                                 </MDTypography>
                             </MDBox>
-                            <MDBox pb={3} px={2}>
-                                <MDBox mt={3}>
-                                    <DataTable
-                                        table={{ columns, rows: data }}
-                                        isSorted={false}
-                                        entriesPerPage={false}
-                                        showTotalEntries={false}
-                                        noEndBorder
-                                    />
-                                </MDBox>
+                            <MDBox pt={2} px={2}>
+                                <DataTable
+                                    table={{ columns, rows: data }}
+                                    isSorted={false}
+                                    entriesPerPage={false}
+                                    showTotalEntries={false}
+                                    noEndBorder
+                                />
                             </MDBox>
                             <MDBox pt={3} px={2} textAlign="left">
                                 <MDButton variant="contained" color="secondary" onClick={addNewRow}>

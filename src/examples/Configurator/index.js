@@ -127,7 +127,7 @@ function Configurator() {
                 px={3}
             >
                 <MDBox>
-                    <MDTypography variant="h5">Customize</MDTypography>
+                    <MDTypography variant="h5">Settings</MDTypography>
                     <MDTypography variant="body2" color="text">
                         See dashboard options.
                     </MDTypography>
@@ -152,7 +152,7 @@ function Configurator() {
 
             <MDBox pt={0.5} pb={3} px={3}>
                 <MDBox>
-                    <MDTypography variant="h6">Sidenav Colors</MDTypography>
+                    <MDTypography variant="h6">Color</MDTypography>
 
                     <MDBox mb={0.5}>
                         {sidenavColors.map((color) => (
@@ -206,9 +206,9 @@ function Configurator() {
                 </MDBox>
 
                 <MDBox mt={3} lineHeight={1}>
-                    <MDTypography variant="h6">Sidenav Type</MDTypography>
+                    <MDTypography variant="h6">Theme</MDTypography>
                     <MDTypography variant="button" color="text">
-                        Choose between different sidenav types.
+                        Choose between different side navigation types.
                     </MDTypography>
 
                     <MDBox

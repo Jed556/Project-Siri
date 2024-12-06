@@ -69,16 +69,14 @@ function SummaryOfTargetAccounts() {
                                     Summary of Target Accounts
                                 </MDTypography>
                             </MDBox>
-                            <MDBox pb={3} px={2}>
-                                <MDBox mt={3}>
-                                    <DataTable
-                                        table={{ columns, rows }}
-                                        isSorted={false}
-                                        entriesPerPage={false}
-                                        showTotalEntries={false}
-                                        noEndBorder
-                                    />
-                                </MDBox>
+                            <MDBox pt={2} pb={3} px={2}>
+                                <DataTable
+                                    table={{ columns, rows }}
+                                    isSorted={false}
+                                    entriesPerPage={false}
+                                    showTotalEntries={false}
+                                    noEndBorder
+                                />
                             </MDBox>
                         </Card>
                     </Grid>

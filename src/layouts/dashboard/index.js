@@ -94,7 +94,7 @@ function Dashboard() {
                             <MDBox mb={3}>
                                 <ReportsBarChart
                                     color="info"
-                                    title="Bar Graph Sample"
+                                    title="Analytics"
                                     description="Description"
                                     date="time"
                                     chart={reportsBarChartData}
@@ -105,7 +105,7 @@ function Dashboard() {
                             <MDBox mb={3}>
                                 <ReportsLineChart
                                     color="success"
-                                    title="Line Graph Sample"
+                                    title="Analytics"
                                     description={
                                         <>
                                             (<strong>+15%</strong>) x today.

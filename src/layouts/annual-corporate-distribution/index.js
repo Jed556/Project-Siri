@@ -75,7 +75,7 @@ function AnnualCorporateDistributionList() {
                                     Annual Corporate Distribution List
                                 </MDTypography>
                             </MDBox>
-                            <MDBox pt={3} px={2}>
+                            <MDBox pt={2} px={2}>
                                 <DataTable
                                     table={{ columns, rows: data }}
                                     isSorted={false}
@@ -85,8 +85,8 @@ function AnnualCorporateDistributionList() {
                                 />
                             </MDBox>
                             <MDBox
-                                py={3}
-                                px={3}
+                                pt={3}
+                                px={2}
                                 display="flex"
                                 justifyContent="space-between"
                                 alignItems="center"
@@ -95,7 +95,7 @@ function AnnualCorporateDistributionList() {
                                     Add New Row
                                 </MDButton>
                             </MDBox>
-                            <MDBox pt={3} px={2}>
+                            <MDBox pt={5} px={2}>
                                 <Grid container spacing={3}>
                                     <Grid item xs={12} md={6}>
                                         <MDInput

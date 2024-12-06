@@ -14,6 +14,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import SheetActionButtons from "examples/Buttons/SheetActionButtons";
+import configs from "config";
 
 import React, { useState } from "react";
 
@@ -145,7 +146,7 @@ function SiteVisitForm() {
                     </Grid>
                 </Grid>
             </MDBox>
-            <Footer />
+            <Footer company={configs.footer.company} />
         </DashboardLayout>
     );
 }

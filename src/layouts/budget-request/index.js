@@ -70,7 +70,7 @@ function BudgetRequest() {
                                     Budget Request Form
                                 </MDTypography>
                             </MDBox>
-                            <MDBox pt={3} px={2}>
+                            <MDBox pt={2} px={2}>
                                 <DataTable
                                     table={{ columns, rows: data }}
                                     isSorted={false}
@@ -79,13 +79,7 @@ function BudgetRequest() {
                                     noEndBorder
                                 />
                             </MDBox>
-                            <MDBox
-                                pt={3}
-                                px={3}
-                                display="flex"
-                                justifyContent="space-between"
-                                alignItems="center"
-                            >
+                            <MDBox pt={3} px={2} textAlign="left">
                                 <MDButton variant="contained" color="secondary" onClick={addNewRow}>
                                     Add New Row
                                 </MDButton>
