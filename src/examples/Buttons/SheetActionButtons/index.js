@@ -14,7 +14,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-import { utils, writeFile } from "xlsx";
+import { utils, writeFile, write } from "xlsx"; // Added write to the import statement
 import PropTypes from "prop-types";
 
 // Data
@@ -72,24 +72,24 @@ function handleDownload(data) {
 
 function handlePrint(data) {
     const workbook = makeSheet(data);
-    const excelBuffer = writeFile(workbook, { bookType: "xlsx", type: "buffer" });
-    const blob = new Blob([excelBuffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = data.name || `Siri_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const html = utils.sheet_to_html(worksheet);
+
+    const printWindow = window.open("", "_blank");
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
 }
 
-function SheetActionButtons({ sheetId, data }) {
+function SheetActionButtons({ sheetId, data, readonly }) {
     return (
         <MDBox py={3} px={2} textAlign="center">
-            <MDButton variant="contained" color="success" onClick={handleSubmit}>
-                Save to Google Sheets
-            </MDButton>
+            {!readonly && (
+                <MDButton variant="contained" color="success" onClick={handleSubmit}>
+                    Save to Google Sheets
+                </MDButton>
+            )}
             <MDButton
                 variant="contained"
                 color="info"
@@ -121,6 +121,7 @@ SheetActionButtons.propTypes = {
         name: PropTypes.string,
         rows: PropTypes.arrayOf(PropTypes.object).isRequired,
     }),
+    readonly: PropTypes.bool, // Added propTypes validation for readonly
 };
 
 export default SheetActionButtons;
