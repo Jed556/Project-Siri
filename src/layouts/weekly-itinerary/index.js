@@ -32,7 +32,6 @@ function WeeklyItinerary() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
 
-    const { columns, rows } = authorsTableData();
     const [state, setState] = useState({
         week: "",
         objectives: "",
