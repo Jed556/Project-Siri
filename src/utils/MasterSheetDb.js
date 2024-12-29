@@ -2,7 +2,7 @@ import { utils, writeFile } from "xlsx";
 import SpreadsheetService from "utils/SpreadsheetService";
 
 const apiCo = {
-    MasterSheetId: process.env.REACT_APP_APICO_MASTER_SHEET_ID,
+    MasterSheetId: process.env.REACT_APP_APICO_MASTER_SPREADSHEET_ID,
 };
 
 class MasterSheetDb {
