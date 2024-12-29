@@ -1,4 +1,4 @@
-/*Material Dashboard 2 React base styles*/
+// Material Dashboard 2 React base styles
 import colors from "assets/theme/base/colors";
 import typography from "assets/theme/base/typography";
 
@@ -10,10 +10,10 @@ const { size } = typography;
 
 const outlined = {
     base: {
-        minHeight: pxToRem(40),
+        minHeight: pxToRem(39),
         color: light.main,
         borderColor: light.main,
-        padding: `${pxToRem(10)} ${pxToRem(24)}`,
+        padding: `${pxToRem(9)} ${pxToRem(24)}`,
 
         "&:hover": {
             opacity: 0.75,
@@ -26,8 +26,8 @@ const outlined = {
     },
 
     small: {
-        minHeight: pxToRem(32),
-        padding: `${pxToRem(6)} ${pxToRem(16)}`,
+        minHeight: pxToRem(31),
+        padding: `${pxToRem(6)} ${pxToRem(18)}`,
         fontSize: size.xs,
 
         "& .material-icon, .material-icons-round, svg": {
@@ -36,8 +36,8 @@ const outlined = {
     },
 
     large: {
-        minHeight: pxToRem(47),
-        padding: `${pxToRem(12)} ${pxToRem(28)}`,
+        minHeight: pxToRem(46),
+        padding: `${pxToRem(12)} ${pxToRem(64)}`,
         fontSize: size.sm,
 
         "& .material-icon, .material-icons-round, svg": {

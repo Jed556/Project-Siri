@@ -81,9 +81,9 @@ function PurchaseOrder() {
                                 py={3}
                                 px={2}
                                 variant="gradient"
-                                bgColor="info"
+                                bgColor={sidenavColor}
                                 borderRadius="lg"
-                                coloredShadow="info"
+                                coloredShadow={sidenavColor}
                             >
                                 <MDTypography variant="h6" color="white">
                                     Order Details
@@ -133,9 +133,9 @@ function PurchaseOrder() {
                                 py={3}
                                 px={2}
                                 variant="gradient"
-                                bgColor="info"
+                                bgColor={sidenavColor}
                                 borderRadius="lg"
-                                coloredShadow="info"
+                                coloredShadow={sidenavColor}
                             >
                                 <MDTypography variant="h6" color="white">
                                     Items

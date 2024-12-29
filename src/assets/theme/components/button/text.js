@@ -11,10 +11,10 @@ const { size } = typography;
 const buttonText = {
     base: {
         backgroundColor: transparent.main,
-        minHeight: pxToRem(40),
+        minHeight: pxToRem(37),
         color: text.main,
         boxShadow: "none",
-        padding: `${pxToRem(10)} ${pxToRem(24)}`,
+        padding: `${pxToRem(9)} ${pxToRem(24)}`,
 
         "&:hover": {
             backgroundColor: transparent.main,
@@ -40,8 +40,8 @@ const buttonText = {
     },
 
     small: {
-        minHeight: pxToRem(32),
-        padding: `${pxToRem(6)} ${pxToRem(16)}`,
+        minHeight: pxToRem(29),
+        padding: `${pxToRem(6)} ${pxToRem(18)}`,
         fontSize: size.xs,
 
         "& .material-icon, .material-icons-round, svg": {
@@ -50,8 +50,8 @@ const buttonText = {
     },
 
     large: {
-        minHeight: pxToRem(47),
-        padding: `${pxToRem(12)} ${pxToRem(28)}`,
+        minHeight: pxToRem(44),
+        padding: `${pxToRem(12)} ${pxToRem(64)}`,
         fontSize: size.sm,
 
         "& .material-icon, .material-icons-round, svg": {

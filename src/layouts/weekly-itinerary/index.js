@@ -14,7 +14,10 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import SheetActionButtons from "examples/Buttons/SheetActionButtons";
+import { useMaterialUIController } from "context";
+
 import configs from "config";
+
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
@@ -30,6 +33,9 @@ import SpreadsheetService from "utils/SpreadsheetService"; // Import Spreadsheet
 const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
 function WeeklyItinerary() {
+    const [controller] = useMaterialUIController();
+    const { sidenavColor } = controller;
+
     const { columns, rows } = authorsTableData();
     const [state, setState] = useState({
         week: "",
@@ -154,9 +160,9 @@ function WeeklyItinerary() {
                                 py={3}
                                 px={2}
                                 variant="gradient"
-                                bgColor="info"
+                                bgColor={sidenavColor}
                                 borderRadius="lg"
-                                coloredShadow="info"
+                                coloredShadow={sidenavColor}
                             >
                                 <MDTypography variant="h6" color="white">
                                     Weekly Schedule

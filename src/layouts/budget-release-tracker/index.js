@@ -97,9 +97,9 @@ function BudgetReleaseTracker() {
                                 py={3}
                                 px={2}
                                 variant="gradient"
-                                bgColor="info"
+                                bgColor={sidenavColor}
                                 borderRadius="lg"
-                                coloredShadow="info"
+                                coloredShadow={sidenavColor}
                             >
                                 <MDTypography variant="h6" color="white">
                                     Budget Release Tracker
