@@ -134,6 +134,11 @@ class SpreadsheetService {
         const sheet = spreadsheet.sheets.find((sheet) => sheet.properties.title === sheetName);
         return sheet ? sheet.properties.sheetId : null;
     }
+
+    openSpreadsheetInNewTab(spreadsheetId) {
+        const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
+        window.open(url, "_blank");
+    }
 }
 
 export default SpreadsheetService;

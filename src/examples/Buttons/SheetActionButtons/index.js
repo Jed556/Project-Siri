@@ -19,6 +19,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
+import { useMaterialUIController } from "context";
 
 import { utils, writeFile, write } from "xlsx"; // Added write to the import statement
 import PropTypes from "prop-types";
@@ -156,6 +157,10 @@ function handlePrint(data, spreadsheetId) {
 }
 
 function SheetActionButtons({ data, readonly }) {
+    // The useMaterialUIController hook is used to access the Material UI controller
+    const [controller] = useMaterialUIController();
+    const { sidenavColor } = controller;
+
     const [selectedSheet, setSelectedSheet] = useState("new");
     const [sheets, setSheets] = useState([]);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
@@ -234,7 +239,7 @@ function SheetActionButtons({ data, readonly }) {
             </Select>
             <MDButton
                 variant="contained"
-                color="info"
+                color={sidenavColor}
                 onClick={() =>
                     handleAction(
                         () => fetchSheets(setSheets, data.type, "creator"),
@@ -249,7 +254,7 @@ function SheetActionButtons({ data, readonly }) {
             {!readonly && (
                 <MDButton
                     variant="contained"
-                    color="success"
+                    color={sidenavColor}
                     onClick={() =>
                         handleAction(
                             () =>
@@ -271,7 +276,7 @@ function SheetActionButtons({ data, readonly }) {
             )}
             <MDButton
                 variant="contained"
-                color="info"
+                color={sidenavColor}
                 onClick={() =>
                     handleAction(
                         () => handleDownload(data),
@@ -286,7 +291,7 @@ function SheetActionButtons({ data, readonly }) {
             </MDButton>
             <MDButton
                 variant="contained"
-                color="primary"
+                color={sidenavColor}
                 onClick={() =>
                     handleAction(
                         () => handlePrint(data, selectedSheet),
@@ -298,6 +303,21 @@ function SheetActionButtons({ data, readonly }) {
                 disabled={selectedSheet === "new"}
             >
                 Print
+            </MDButton>
+            <MDButton
+                variant="contained"
+                color={sidenavColor}
+                onClick={() =>
+                    handleAction(
+                        () => spreadsheetService.openSpreadsheetInNewTab(selectedSheet),
+                        "Redirecting...",
+                        "Failed to redirect"
+                    )
+                }
+                style={{ marginLeft: 10 }}
+                disabled={selectedSheet === "new"}
+            >
+                Open Sheet
             </MDButton>
             <MDSnackbar
                 color={snackbar.severity}
