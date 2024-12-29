@@ -21,26 +21,26 @@
 */
 
 // Material Dashboard 2 React layouts
-import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
-import Billing from "layouts/billing";
-import RTL from "layouts/rtl";
-import Notifications from "layouts/notifications";
+import AnnualCorporateDistributionList from "layouts/annual-corporate-distribution";
+import ClientEntertainmentRequest from "layouts/client-entertainment-request";
+import SummaryOfTargetAccounts from "layouts/summary-of-target-accounts";
+import BudgetReleaseTracker from "layouts/budget-release-tracker";
+import MasterlistOfAccounts from "layouts/masterlist-of-accounts";
+import SummaryOfArrangement from "layouts/summary-of-arrangement";
+import TrainingCommencement from "layouts/training-commencement";
+import SummaryOfAccounts from "layouts/summary-of-accounts";
 import WeeklyIteineary from "layouts/weekly-itinerary";
-import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
-import TrainingCommencement from "layouts/training-commencement";
-import SiteVisitForm from "layouts/site-visit";
-import SummaryOfAccounts from "layouts/summary-of-accounts";
-import SummaryOfTargetAccounts from "layouts/summary-of-target-accounts";
-import SummaryOfArrangement from "layouts/summary-of-arrangement";
-import MasterlistOfAccounts from "layouts/masterlist-of-accounts";
 import PurchaseOrder from "layouts/purchase-order";
-import AnnualCorporateDistributionList from "layouts/annual-corporate-distribution";
 import BudgetRequest from "layouts/budget-request";
-import BudgetReleaseTracker from "layouts/budget-release-tracker";
-import ClientEntertainmentRequest from "layouts/client-entertainment-request";
+import Notifications from "layouts/notifications";
+import SiteVisitForm from "layouts/site-visit";
+import Dashboard from "layouts/dashboard";
+import Billing from "layouts/billing";
+import Profile from "layouts/profile";
+import Tables from "layouts/tables";
+import RTL from "layouts/rtl";
 
 // @mui icons
 import Icon from "@mui/material/Icon";

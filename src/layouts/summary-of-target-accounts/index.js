@@ -1,26 +1,25 @@
 // @mui material components
-import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
+import { useMaterialUIController } from "context";
 import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
-import MDButton from "components/MDButton";
+import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
-import SheetActionButtons from "examples/Buttons/SheetActionButtons";
+import Footer from "examples/Footer";
+
+// Configs
 import configs from "config";
 
-// Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
-
 function SummaryOfTargetAccounts() {
+    const [controller] = useMaterialUIController();
+    const { sidenavColor } = controller;
+
     const columns = [
         { Header: "AE", accessor: "ae" },
         { Header: "Address", accessor: "address" },

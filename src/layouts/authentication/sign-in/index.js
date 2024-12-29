@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 // @mui material components
-import Card from "@mui/material/Card";
 import Switch from "@mui/material/Switch";
-import Grid from "@mui/material/Grid";
 import MuiLink from "@mui/material/Link";
+import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
 
 // @mui icons
 import FacebookIcon from "@mui/icons-material/Facebook";
@@ -15,10 +15,11 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import GoogleIcon from "@mui/icons-material/Google";
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
+import { useMaterialUIController } from "context";
 import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
+import MDBox from "components/MDBox";
 
 // Authentication layout components
 import BasicLayout from "layouts/authentication/components/BasicLayout";
@@ -27,6 +28,9 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
 function Basic() {
+    const [controller] = useMaterialUIController();
+    const { sidenavColor } = controller;
+
     const [rememberMe, setRememberMe] = useState(false);
 
     const handleSetRememberMe = () => setRememberMe(!rememberMe);

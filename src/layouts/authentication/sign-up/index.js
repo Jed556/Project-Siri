@@ -2,14 +2,15 @@
 import { Link } from "react-router-dom";
 
 // @mui material components
-import Card from "@mui/material/Card";
 import Checkbox from "@mui/material/Checkbox";
+import Card from "@mui/material/Card";
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
+import { useMaterialUIController } from "context";
 import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
+import MDBox from "components/MDBox";
 
 // Authentication layout components
 import CoverLayout from "layouts/authentication/components/CoverLayout";
@@ -18,6 +19,9 @@ import CoverLayout from "layouts/authentication/components/CoverLayout";
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 
 function Cover() {
+    const [controller] = useMaterialUIController();
+    const { sidenavColor } = controller;
+
     return (
         <CoverLayout image={bgImage}>
             <Card>

@@ -2,22 +2,26 @@
 import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
+import { useMaterialUIController } from "context";
 import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React examples
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import MasterCard from "examples/Cards/MasterCard";
 import DefaultInfoCard from "examples/Cards/InfoCards/DefaultInfoCard";
+import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import MasterCard from "examples/Cards/MasterCard";
+import Footer from "examples/Footer";
 
 // Billing page components
-import PaymentMethod from "layouts/billing/components/PaymentMethod";
-import Invoices from "layouts/billing/components/Invoices";
 import BillingInformation from "layouts/billing/components/BillingInformation";
+import PaymentMethod from "layouts/billing/components/PaymentMethod";
 import Transactions from "layouts/billing/components/Transactions";
+import Invoices from "layouts/billing/components/Invoices";
 
 function Billing() {
+    const [controller] = useMaterialUIController();
+    const { sidenavColor } = controller;
+
     return (
         <DashboardLayout>
             <DashboardNavbar absolute isMini />

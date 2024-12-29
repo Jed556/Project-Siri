@@ -5,23 +5,29 @@ import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React example components
+import { useMaterialUIController } from "context";
+import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
+import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
-import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
-import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
+
+// Configs
 import configs from "config";
 
 // Data
-import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
 import reportsLineChartData from "layouts/dashboard/data/reportsLineChartData";
+import reportsBarChartData from "layouts/dashboard/data/reportsBarChartData";
 
 // Dashboard components
-import Projects from "layouts/dashboard/components/Projects";
 import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
+import Projects from "layouts/dashboard/components/Projects";
 
 function Dashboard() {
+    const [controller] = useMaterialUIController();
+    const { sidenavColor } = controller;
+
     const { sales, tasks } = reportsLineChartData;
     console.log(configs.footer.company);
 

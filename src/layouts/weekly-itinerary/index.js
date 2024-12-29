@@ -1,34 +1,30 @@
+// React components
+import { useState, useEffect } from "react";
+
 // @mui material components
-import Grid from "@mui/material/Grid";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import Card from "@mui/material/Card";
+import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
-import MDBox from "components/MDBox";
+import { useMaterialUIController } from "context";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
-import MDButton from "components/MDButton";
+import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import SheetActionButtons from "examples/Buttons/SheetActionButtons";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import DataTable from "examples/Tables/DataTable";
-import SheetActionButtons from "examples/Buttons/SheetActionButtons";
-import { useMaterialUIController } from "context";
 
-import configs from "config";
-
-// Data
-import authorsTableData from "layouts/tables/data/authorsTableData";
-import projectsTableData from "layouts/tables/data/projectsTableData";
-
-import { useState, useEffect } from "react";
-import { format } from "prettier";
-import { func } from "prop-types";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { parseISO } from "date-fns"; // Import parseISO to handle date parsing
+// Other components
 import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+import { parseISO } from "date-fns"; // Import parseISO to handle date parsing
+
+// Configs
+import configs from "config";
 
 const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
