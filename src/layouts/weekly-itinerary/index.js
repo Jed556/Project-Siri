@@ -19,11 +19,15 @@ import configs from "config";
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "prettier";
 import { func } from "prop-types";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { parseISO } from "date-fns"; // Import parseISO to handle date parsing
+import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+
+const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
 function WeeklyItinerary() {
     const { columns, rows } = authorsTableData();
@@ -40,6 +44,48 @@ function WeeklyItinerary() {
             Saturday: { date: "", remarks: "" },
         },
     });
+
+    useEffect(() => {
+        const currentSheetId = localStorage.getItem("currentSheetId");
+        if (currentSheetId) {
+            // Load the sheet data using the currentSheetId
+            spreadsheetService.getSpreadsheetValues(currentSheetId, "Sheet1").then((response) => {
+                const values = response.values || [];
+                const newState = {
+                    week: values[0] && values[0][1] ? values[0][1] : "",
+                    objectives: values[1] && values[1][1] ? values[1][1] : "",
+                    deadlines: values[2] && values[2][1] ? values[2][1] : "",
+                    dailyRemarks: {
+                        Monday: {
+                            date: values[3] && values[3][1] ? parseISO(values[3][1]) : null,
+                            remarks: values[3] && values[3][2] ? values[3][2] : "",
+                        },
+                        Tuesday: {
+                            date: values[4] && values[4][1] ? parseISO(values[4][1]) : null,
+                            remarks: values[4] && values[4][2] ? values[4][2] : "",
+                        },
+                        Wednesday: {
+                            date: values[5] && values[5][1] ? parseISO(values[5][1]) : null,
+                            remarks: values[5] && values[5][2] ? values[5][2] : "",
+                        },
+                        Thursday: {
+                            date: values[6] && values[6][1] ? parseISO(values[6][1]) : null,
+                            remarks: values[6] && values[6][2] ? values[6][2] : "",
+                        },
+                        Friday: {
+                            date: values[7] && values[7][1] ? parseISO(values[7][1]) : null,
+                            remarks: values[7] && values[7][2] ? values[7][2] : "",
+                        },
+                        Saturday: {
+                            date: values[8] && values[8][1] ? parseISO(values[8][1]) : null,
+                            remarks: values[8] && values[8][2] ? values[8][2] : "",
+                        },
+                    },
+                };
+                setState(newState);
+            });
+        }
+    }, []);
 
     const handleInputChange = (field, value, day = null) => {
         if (day) {
@@ -60,15 +106,24 @@ function WeeklyItinerary() {
             }));
         }
     };
-
     function formatTableData() {
         return {
-            name: `Weekly_Itinerary_${state.week}`,
-            rows: Object.keys(state.dailyRemarks).map((day) => ({
-                Day: day,
-                Date: state.dailyRemarks[day].date,
-                Remarks: state.dailyRemarks[day].remarks,
-            })),
+            wbTitle: "Weekly Itinerary",
+            sheetName: `Weekly_Itinerary_${state.week}`,
+            fileName: `Weekly_Itinerary_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Weekly Itinerary",
+            rows: [
+                ["Week Covered", state.week],
+                ["Objectives", state.objectives],
+                ["Deadlines", state.deadlines],
+                ...Object.keys(state.dailyRemarks).map((day) => [
+                    day,
+                    state.dailyRemarks[day].date
+                        ? new Date(state.dailyRemarks[day].date).toLocaleDateString("en-US")
+                        : "",
+                    state.dailyRemarks[day].remarks,
+                ]),
+            ],
         };
     }
 
@@ -176,7 +231,7 @@ function WeeklyItinerary() {
                                     </MDBox>
                                 ))}
                             </LocalizationProvider>
-                            <SheetActionButtons sheetId="" data={formatTableData()} />
+                            <SheetActionButtons data={formatTableData()} />
                         </Card>
                     </Grid>
                 </Grid>

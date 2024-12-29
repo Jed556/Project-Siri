@@ -15,6 +15,7 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import SheetActionButtons from "examples/Buttons/SheetActionButtons";
 import configs from "config";
+
 // Data
 import authorsTableData from "layouts/tables/data/authorsTableData";
 import projectsTableData from "layouts/tables/data/projectsTableData";
@@ -72,6 +73,12 @@ function SummaryOfAccounts() {
         },
         // Add more rows as needed
     ];
+
+    const handleInputChange = (index, field, value) => {
+        const updatedRows = [...rows];
+        updatedRows[index][field] = value;
+        setRows(updatedRows);
+    };
 
     return (
         <DashboardLayout>

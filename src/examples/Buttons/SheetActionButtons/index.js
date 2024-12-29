@@ -1,12 +1,18 @@
 // @mui material components
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import Input from "@mui/material/Input"; // Import MUI Input component
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import { useState, useEffect } from "react";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
+import MDSnackbar from "components/MDSnackbar";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -16,20 +22,42 @@ import DataTable from "examples/Tables/DataTable";
 
 import { utils, writeFile, write } from "xlsx"; // Added write to the import statement
 import PropTypes from "prop-types";
+import { da } from "date-fns/locale";
+import MasterSheetDb from "utils/MasterSheetDb";
+import SpreadsheetService from "utils/SpreadsheetService";
 
 // Data
 // Data sources goes here
 
-function makeSheet(data) {
-    const worksheet = utils.json_to_sheet(data.rows);
+const masterSheetDb = new MasterSheetDb();
+const spreadsheetService = new SpreadsheetService();
+
+const fetchSheets = async (setSheets, type, author) => {
+    const filters = [
+        [3, author], // Assuming index 3 is the author
+        [1, type], // Assuming index 1 is the type
+    ];
+    const filteredSheets = await masterSheetDb.getFilteredSheets(filters);
+    setSheets(filteredSheets);
+};
+
+function getLongestRow(rows) {
+    const longestRow = rows.reduce((maxRow, currentRow) => {
+        return currentRow.length > maxRow.length ? currentRow : maxRow;
+    }, []);
+    return longestRow;
+}
+
+function makeWebSheet(data) {
+    const worksheet = utils.aoa_to_sheet(data.rows);
     const workbook = utils.book_new();
     utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
     // Apply column width
     const colWidths = data.rows.reduce((widths, row) => {
-        Object.keys(row).forEach((key, index) => {
-            const value = row[key] ? row[key].toString() : "";
-            widths[index] = Math.max(widths[index] || 10, value.length);
+        row.forEach((value, index) => {
+            const cellValue = value ? value.toString() : "";
+            widths[index] = Math.max(widths[index] || 10, cellValue.length);
         });
         return widths;
     }, []);
@@ -58,68 +86,252 @@ function makeSheet(data) {
     return workbook;
 }
 
-function handleSubmit() {
-    alert("Form submitted");
+async function handleSubmit(data, author, selectedSheet, setSheets, setSelectedSheet) {
+    let spreadsheetId = selectedSheet;
+    if (!spreadsheetId || spreadsheetId === "new") {
+        const response = await spreadsheetService.createSpreadsheet({
+            properties: { title: data.fileName },
+            sheets: [
+                {
+                    properties: {
+                        title: data.sheetName,
+                        gridProperties: { rowCount: 1000, columnCount: 26 },
+                        tabColor: { red: 1, green: 0.3, blue: 0.4 },
+                    },
+                },
+            ],
+        });
+        spreadsheetId = response.spreadsheetId;
+
+        await masterSheetDb.loadSheets();
+        await masterSheetDb.appendSheetData(
+            data.fileName,
+            data.type,
+            new Date().toISOString(),
+            "creator",
+            spreadsheetId
+        );
+    }
+    await spreadsheetService.updateSpreadsheetValues(spreadsheetId, data.sheetName, data.rows);
+    const longestRow = getLongestRow(data.rows);
+    await spreadsheetService.autoResizeColumns(
+        spreadsheetId,
+        await spreadsheetService.getSheetId(spreadsheetId, data.sheetName),
+        0,
+        longestRow.length
+    );
+    setSelectedSheet(spreadsheetId);
+    localStorage.setItem("currentSheetId", spreadsheetId);
+    fetchSheets(setSheets, data.type, author); // Refresh the sheets after submission
 }
 
 function handleDownload(data) {
-    const workbook = makeSheet(data);
+    const workbook = makeWebSheet(data);
     writeFile(
         workbook,
-        `${data.name}.xlsx` || `Siri_${new Date().toISOString().slice(0, 10)}.xlsx`
+        `${data.fileName}.xlsx` || `Siri_${new Date().toISOString().slice(0, 10)}.xlsx`
     );
 }
 
-function handlePrint(data) {
-    const workbook = makeSheet(data);
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const html = utils.sheet_to_html(worksheet);
+function handlePrint(data, spreadsheetId) {
+    spreadsheetService
+        .getSpreadsheetValues(spreadsheetId, data.sheetName)
+        .then((response) => {
+            console.log(response);
+            const rows = response.values || [];
+            data.rows = rows;
 
-    const printWindow = window.open("", "_blank");
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+            const workbook = makeWebSheet(data);
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const html = utils.sheet_to_html(worksheet);
+
+            const printWindow = window.open("", "_blank");
+            printWindow.document.open();
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        })
+        .catch((err) => console.error(err));
 }
 
-function SheetActionButtons({ sheetId, data, readonly }) {
+function SheetActionButtons({ data, readonly }) {
+    const [selectedSheet, setSelectedSheet] = useState("new");
+    const [sheets, setSheets] = useState([]);
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+    useEffect(() => {
+        fetchSheets(setSheets, data.type, "creator");
+    }, []);
+
+    const handleSheetChange = (event) => {
+        const sheetId = event.target.value;
+        setSelectedSheet(sheetId);
+        localStorage.setItem("currentSheetId", sheetId);
+        console.log("Selected sheet:", sheetId);
+    };
+
+    const getSelectedSheetName = () => {
+        if (selectedSheet === "new") {
+            return "New Sheet";
+        }
+        const sheet = sheets.find((sheet) => sheet[4] === selectedSheet);
+        return sheet ? `${sheet[0]}` : "";
+    };
+
+    const handleSnackbarClose = () => {
+        setSnackbar({ ...snackbar, open: false });
+    };
+
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleAction = async (action, sMessage, fMessage) => {
+        try {
+            await action();
+            showSnackbar(sMessage, "success");
+        } catch (error) {
+            showSnackbar(fMessage, "error");
+        }
+    };
+
     return (
         <MDBox py={3} px={2} textAlign="center">
+            <Select
+                value={selectedSheet}
+                onChange={handleSheetChange}
+                displayEmpty
+                renderValue={getSelectedSheetName}
+                input={<Input />}
+                style={{
+                    marginRight: readonly ? 0 : 10,
+                    minWidth: 200,
+                    height: 40,
+                    backgroundColor: "#1a73e8",
+                    color: "#fff",
+                    borderRadius: 4,
+                    padding: "0 10px",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    textTransform: "none",
+                }}
+                MenuProps={{
+                    PaperProps: {
+                        style: {
+                            backgroundColor: "#1a73e8",
+                            color: "#fff",
+                        },
+                    },
+                }}
+            >
+                <MenuItem value="new">New Sheet</MenuItem>
+                {sheets.map((sheet) => (
+                    <MenuItem key={sheet[4]} value={sheet[4]}>
+                        {sheet[0]}
+                    </MenuItem>
+                ))}
+            </Select>
+            <MDButton
+                variant="contained"
+                color="info"
+                onClick={() =>
+                    handleAction(
+                        () => fetchSheets(setSheets, data.type, "creator"),
+                        "Sheets refreshed",
+                        "Failed to refresh sheets"
+                    )
+                }
+                style={{ marginLeft: 10 }}
+            >
+                Refresh Sheets
+            </MDButton>
             {!readonly && (
-                <MDButton variant="contained" color="success" onClick={handleSubmit}>
-                    Save to Google Sheets
+                <MDButton
+                    variant="contained"
+                    color="success"
+                    onClick={() =>
+                        handleAction(
+                            () =>
+                                handleSubmit(
+                                    data,
+                                    "creator",
+                                    selectedSheet,
+                                    setSheets,
+                                    setSelectedSheet
+                                ),
+                            `Sheet ${selectedSheet === "new" ? "created" : "updated"} successfully`,
+                            `Failed to ${selectedSheet === "new" ? "create" : "update"} sheet`
+                        )
+                    }
+                    style={{ marginLeft: 10 }}
+                >
+                    {selectedSheet === "new" ? "New Google Sheet" : "Save Google Sheet"}
                 </MDButton>
             )}
             <MDButton
                 variant="contained"
                 color="info"
-                onClick={() => handleDownload(data)}
+                onClick={() =>
+                    handleAction(
+                        () => handleDownload(data),
+                        "Download successful",
+                        "Failed to download"
+                    )
+                }
                 style={{ marginLeft: 10 }}
+                disabled={selectedSheet === "new"}
             >
                 Download XLS
             </MDButton>
             <MDButton
                 variant="contained"
                 color="primary"
-                onClick={() => handlePrint(data)}
+                onClick={() =>
+                    handleAction(
+                        () => handlePrint(data, selectedSheet),
+                        "Printing...",
+                        "Failed to print"
+                    )
+                }
                 style={{ marginLeft: 10 }}
+                disabled={selectedSheet === "new"}
             >
                 Print
             </MDButton>
+            <MDSnackbar
+                color={snackbar.severity}
+                icon="notifications"
+                title={snackbar.severity === "success" ? "Success" : "Error"}
+                content={snackbar.message}
+                open={snackbar.open}
+                onClose={handleSnackbarClose}
+                close={handleSnackbarClose}
+                bgWhite
+            />
         </MDBox>
     );
 }
 
 SheetActionButtons.defaultProps = {
-    sheetId: "",
-    data: { name: "", rows: [] },
+    data: {
+        wbTitle: "Untitled Workbook",
+        sheetName: "Sheet1",
+        fileName: "New Spreadsheet",
+        type: "",
+        sheetId: "",
+        rows: [],
+    },
 };
 
 SheetActionButtons.propTypes = {
-    sheetId: PropTypes.string,
     data: PropTypes.shape({
-        name: PropTypes.string,
-        rows: PropTypes.arrayOf(PropTypes.object).isRequired,
+        wbTitle: PropTypes.string,
+        sheetName: PropTypes.string,
+        fileName: PropTypes.string,
+        type: PropTypes.string,
+        sheetId: PropTypes.string,
+        rows: PropTypes.arrayOf(PropTypes.array).isRequired,
     }),
     readonly: PropTypes.bool, // Added propTypes validation for readonly
 };

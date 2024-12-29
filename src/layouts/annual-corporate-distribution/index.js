@@ -42,16 +42,16 @@ function AnnualCorporateDistributionList() {
     ];
 
     const data = rows.map((row, index) => ({
-        no: <MDInput fullWidth />,
-        company: <MDInput fullWidth />,
-        recipient: <MDInput fullWidth />,
-        designation: <MDInput fullWidth />,
-        category1TypeA: <MDInput fullWidth />,
-        category1TypeB: <MDInput fullWidth />,
-        category1TypeC: <MDInput fullWidth />,
-        category2TypeA: <MDInput fullWidth />,
-        category2TypeB: <MDInput fullWidth />,
-        category2TypeC: <MDInput fullWidth />,
+        no: <MDInput fullWidth placeholder={`No. ${index + 1}`} />,
+        company: <MDInput fullWidth placeholder="Company" />,
+        recipient: <MDInput fullWidth placeholder="Recipient / Name" />,
+        designation: <MDInput fullWidth placeholder="Designation" />,
+        category1TypeA: <MDInput fullWidth placeholder="Category 1 (Type A)" />,
+        category1TypeB: <MDInput fullWidth placeholder="Category 1 (Type B)" />,
+        category1TypeC: <MDInput fullWidth placeholder="Category 1 (Type C)" />,
+        category2TypeA: <MDInput fullWidth placeholder="Category 2 (Type A)" />,
+        category2TypeB: <MDInput fullWidth placeholder="Category 2 (Type B)" />,
+        category2TypeC: <MDInput fullWidth placeholder="Category 2 (Type C)" />,
     }));
 
     return (

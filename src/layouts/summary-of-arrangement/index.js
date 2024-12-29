@@ -24,6 +24,29 @@ function SummaryOfArrangement() {
         setRows([...rows, {}]);
     };
 
+    function formatTableData() {
+        return {
+            name: "Summary_of_Arrangement",
+            rows: rows.map((row) => ({
+                Account: row.account || "",
+                AE: row.ae || "",
+                "Main Contacts": row.mainContacts || "",
+                Designation: row.designation || "",
+                Courses: row.courses || "",
+                "Old Rates": row.oldRates || "",
+                "Fees Breakdown": row.feesBreakdown || "",
+                Discount: row.discount || "",
+                "AF-R": row.afR || "",
+                "Official Rate": row.officialRate || "",
+                "Last Update": row.lastUpdate || "",
+                "Terms (Weeks)": row.terms || "",
+                "Signed Docs - MOA": row.signedDocsMoa || "",
+                "Signed Docs - SP": row.signedDocsSp || "",
+                Remarks: row.remarks || "",
+            })),
+        };
+    }
+
     const columns = [
         { Header: "ACCOUNT", accessor: "account" },
         { Header: "AE", accessor: "ae" },
@@ -42,22 +65,133 @@ function SummaryOfArrangement() {
         { Header: "REMARKS", accessor: "remarks" },
     ];
 
-    const data = rows.map((_, index) => ({
-        account: <MDInput fullWidth placeholder="Account" />,
-        ae: <MDInput fullWidth placeholder="AE" />,
-        mainContacts: <MDInput fullWidth placeholder="Main Contacts" />,
-        designation: <MDInput fullWidth placeholder="Designation" />,
-        courses: <MDInput fullWidth placeholder="Courses" />,
-        oldRates: <MDInput fullWidth placeholder="Old Rates" />,
-        feesBreakdown: <MDInput fullWidth placeholder="Fees Breakdown" />,
-        discount: <MDInput fullWidth placeholder="Discount" />,
-        afR: <MDInput fullWidth placeholder="AF-R" />,
-        officialRate: <MDInput fullWidth placeholder="Official Rate" />,
-        lastUpdate: <MDInput fullWidth type="date" />,
-        terms: <MDInput fullWidth placeholder="Terms (Weeks)" />,
-        signedDocsMoa: <MDInput fullWidth placeholder="Signed Docs - MOA" />,
-        signedDocsSp: <MDInput fullWidth placeholder="Signed Docs - SP" />,
-        remarks: <MDInput fullWidth placeholder="Remarks" />,
+    const handleInputChange = (index, field, value) => {
+        const updatedRows = [...rows];
+        updatedRows[index][field] = value;
+        setRows(updatedRows);
+    };
+
+    const data = rows.map((row, index) => ({
+        account: (
+            <MDInput
+                fullWidth
+                placeholder="Account"
+                value={row.account || ""}
+                onChange={(e) => handleInputChange(index, "account", e.target.value)}
+            />
+        ),
+        ae: (
+            <MDInput
+                fullWidth
+                placeholder="AE"
+                value={row.ae || ""}
+                onChange={(e) => handleInputChange(index, "ae", e.target.value)}
+            />
+        ),
+        mainContacts: (
+            <MDInput
+                fullWidth
+                placeholder="Main Contacts"
+                value={row.mainContacts || ""}
+                onChange={(e) => handleInputChange(index, "mainContacts", e.target.value)}
+            />
+        ),
+        designation: (
+            <MDInput
+                fullWidth
+                placeholder="Designation"
+                value={row.designation || ""}
+                onChange={(e) => handleInputChange(index, "designation", e.target.value)}
+            />
+        ),
+        courses: (
+            <MDInput
+                fullWidth
+                placeholder="Courses"
+                value={row.courses || ""}
+                onChange={(e) => handleInputChange(index, "courses", e.target.value)}
+            />
+        ),
+        oldRates: (
+            <MDInput
+                fullWidth
+                placeholder="Old Rates"
+                value={row.oldRates || ""}
+                onChange={(e) => handleInputChange(index, "oldRates", e.target.value)}
+            />
+        ),
+        feesBreakdown: (
+            <MDInput
+                fullWidth
+                placeholder="Fees Breakdown"
+                value={row.feesBreakdown || ""}
+                onChange={(e) => handleInputChange(index, "feesBreakdown", e.target.value)}
+            />
+        ),
+        discount: (
+            <MDInput
+                fullWidth
+                placeholder="Discount"
+                value={row.discount || ""}
+                onChange={(e) => handleInputChange(index, "discount", e.target.value)}
+            />
+        ),
+        afR: (
+            <MDInput
+                fullWidth
+                placeholder="AF-R"
+                value={row.afR || ""}
+                onChange={(e) => handleInputChange(index, "afR", e.target.value)}
+            />
+        ),
+        officialRate: (
+            <MDInput
+                fullWidth
+                placeholder="Official Rate"
+                value={row.officialRate || ""}
+                onChange={(e) => handleInputChange(index, "officialRate", e.target.value)}
+            />
+        ),
+        lastUpdate: (
+            <MDInput
+                fullWidth
+                type="date"
+                value={row.lastUpdate || ""}
+                onChange={(e) => handleInputChange(index, "lastUpdate", e.target.value)}
+            />
+        ),
+        terms: (
+            <MDInput
+                fullWidth
+                placeholder="Terms (Weeks)"
+                value={row.terms || ""}
+                onChange={(e) => handleInputChange(index, "terms", e.target.value)}
+            />
+        ),
+        signedDocsMoa: (
+            <MDInput
+                fullWidth
+                placeholder="Signed Docs - MOA"
+                value={row.signedDocsMoa || ""}
+                onChange={(e) => handleInputChange(index, "signedDocsMoa", e.target.value)}
+            />
+        ),
+        signedDocsSp: (
+            <MDInput
+                fullWidth
+                placeholder="Signed Docs - SP"
+                value={row.signedDocsSp || ""}
+                onChange={(e) => handleInputChange(index, "signedDocsSp", e.target.value)}
+            />
+        ),
+        remarks: (
+            <MDInput
+                fullWidth
+                placeholder="Remarks"
+                value={row.remarks || ""}
+                onChange={(e) => handleInputChange(index, "remarks", e.target.value)}
+            />
+        ),
     }));
 
     return (
@@ -90,11 +224,12 @@ function SummaryOfArrangement() {
                                     noEndBorder
                                 />
                             </MDBox>
-                            <MDBox py={3} px={2} textAlign="left">
+                            <MDBox pt={3} px={2} textAlign="left">
                                 <MDButton variant="contained" color="secondary" onClick={addNewRow}>
                                     Add New Row
                                 </MDButton>
                             </MDBox>
+                            <SheetActionButtons data={formatTableData()} />
                         </Card>
                     </Grid>
                 </Grid>
