@@ -89,7 +89,7 @@ function makeWebSheet(data) {
     return workbook;
 }
 
-async function handleSubmit(data, selectedSpreadsheet, setSelectedSpreadsheet, user) {
+async function handleSubmit(data, selectedSpreadsheet, setSelectedSpreadsheet, author) {
     let spreadsheetId = selectedSpreadsheet;
     if (!spreadsheetId || spreadsheetId === "new") {
         const response = await spreadsheetService.createSpreadsheet({
@@ -110,7 +110,7 @@ async function handleSubmit(data, selectedSpreadsheet, setSelectedSpreadsheet, u
             data.fileName,
             data.type,
             new Date().toISOString(),
-            user[4], // Use email from user array
+            author,
             spreadsheetId
         );
     }
@@ -257,8 +257,7 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
                 onClick={() =>
                     handleAction(
                         [
-                            () =>
-                                fetchSpreadsheets(setSpreadsheets, data.type, user.username, true),
+                            () => fetchSpreadsheets(setSpreadsheets, data.type, user[4], true),
                             () => onSheetChange(selectedSpreadsheet, data.sheetName),
                         ],
                         "Spreadsheets refreshed",
@@ -275,13 +274,16 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
                     color={sidenavColor}
                     onClick={() =>
                         handleAction(
-                            () =>
-                                handleSubmit(
-                                    data,
-                                    selectedSpreadsheet,
-                                    setSelectedSpreadsheet,
-                                    user
-                                ),
+                            [
+                                () =>
+                                    handleSubmit(
+                                        data,
+                                        selectedSpreadsheet,
+                                        setSelectedSpreadsheet,
+                                        user[4]
+                                    ),
+                                () => fetchSpreadsheets(setSpreadsheets, data.type, user[4], true),
+                            ],
                             `Spreadsheet ${
                                 selectedSpreadsheet === "new" ? "created" : "updated"
                             } successfully`,
