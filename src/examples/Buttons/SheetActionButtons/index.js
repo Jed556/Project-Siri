@@ -21,9 +21,8 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 import { useMaterialUIController } from "context";
 
-import { utils, writeFile, write } from "xlsx"; // Added write to the import statement
+import { utils, writeFile } from "xlsx";
 import PropTypes from "prop-types";
-import { da } from "date-fns/locale";
 import MasterSheetDb from "utils/MasterSheetDb";
 import SpreadsheetService from "utils/SpreadsheetService";
 
@@ -90,12 +89,7 @@ function makeWebSheet(data) {
     return workbook;
 }
 
-async function handleSubmit(
-    data,
-    selectedSpreadsheet,
-    setSelectedSpreadsheet,
-    user
-) {
+async function handleSubmit(data, selectedSpreadsheet, setSelectedSpreadsheet, user) {
     let spreadsheetId = selectedSpreadsheet;
     if (!spreadsheetId || spreadsheetId === "new") {
         const response = await spreadsheetService.createSpreadsheet({
@@ -263,7 +257,8 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
                 onClick={() =>
                     handleAction(
                         [
-                            () => fetchSpreadsheets(setSpreadsheets, data.type, user.username, true),
+                            () =>
+                                fetchSpreadsheets(setSpreadsheets, data.type, user.username, true),
                             () => onSheetChange(selectedSpreadsheet, data.sheetName),
                         ],
                         "Spreadsheets refreshed",
@@ -287,9 +282,11 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
                                     setSelectedSpreadsheet,
                                     user
                                 ),
-                            `Spreadsheet ${selectedSpreadsheet === "new" ? "created" : "updated"
+                            `Spreadsheet ${
+                                selectedSpreadsheet === "new" ? "created" : "updated"
                             } successfully`,
-                            `Failed to ${selectedSpreadsheet === "new" ? "create" : "update"
+                            `Failed to ${
+                                selectedSpreadsheet === "new" ? "create" : "update"
                             } spreadsheet`
                         )
                     }
