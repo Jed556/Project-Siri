@@ -32,9 +32,9 @@ import SpreadsheetService from "utils/SpreadsheetService";
 const masterSheetDb = new MasterSheetDb();
 const spreadsheetService = new SpreadsheetService();
 
-const fetchSpreadsheets = async (setSpreadsheets, type, author, notTrashedOnly = false) => {
+const fetchSpreadsheets = async (setSpreadsheets, type, email, notTrashedOnly = false) => {
     const filters = [
-        [3, author],
+        [3, email],
         [1, type],
     ];
     if (notTrashedOnly) {
@@ -110,7 +110,7 @@ async function handleSubmit(data, selectedSpreadsheet, setSelectedSpreadsheet, u
             data.fileName,
             data.type,
             new Date().toISOString(),
-            user.username,
+            user[4], // Use email from user array
             spreadsheetId
         );
     }
@@ -171,7 +171,7 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
     const user = JSON.parse(localStorage.getItem("user"));
 
     useEffect(() => {
-        fetchSpreadsheets(setSpreadsheets, data.type, user.username, true);
+        fetchSpreadsheets(setSpreadsheets, data.type, user[4], true); // Use email from user array
     }, []);
 
     const handleSpreadsheetChange = (event) => {
