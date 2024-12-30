@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 // react-router-dom components
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -16,6 +16,14 @@ function DashboardLayout({ children }) {
     const [controller, dispatch] = useMaterialUIController();
     const { miniSidenav } = controller;
     const { pathname } = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const user = localStorage.getItem("user");
+        if (!user) {
+            navigate("/authentication/sign-in");
+        }
+    }, [navigate]);
 
     useEffect(() => {
         setLayout(dispatch, "dashboard");
