@@ -1,3 +1,6 @@
+// React components
+import { useState } from "react";
+
 // react-router-dom components
 import { Link } from "react-router-dom";
 
@@ -11,6 +14,7 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
 import MDBox from "components/MDBox";
+import MDSnackbar from "components/MDSnackbar";
 
 // Authentication layout components
 import CoverLayout from "layouts/authentication/components/CoverLayout";
@@ -18,9 +22,51 @@ import CoverLayout from "layouts/authentication/components/CoverLayout";
 // Images
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 
+import MasterSheetDb from "utils/MasterSheetDb";
+import SpreadsheetService from "utils/SpreadsheetService";
+
 function Cover() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+
+    // Inputs
+    const [username, setUsername] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+
+    const masterSheetDb = new MasterSheetDb();
+
+    const handleSnackbarClose = () => {
+        setSnackbar({ ...snackbar, open: false });
+    };
+
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleSignUp = async () => {
+        try {
+            const newUser = await masterSheetDb.createUser(
+                username,
+                firstName,
+                lastName,
+                email,
+                "info",
+                password
+            );
+            localStorage.setItem("user", JSON.stringify(newUser));
+            showSnackbar(`Hello ${username}\nRedirecting...`, "success");
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 300);
+        } catch (error) {
+            showSnackbar(`Error: ${error.message}`, "error");
+        }
+    };
 
     return (
         <CoverLayout image={bgImage}>
@@ -40,16 +86,50 @@ function Cover() {
                         Join us today
                     </MDTypography>
                     <MDTypography display="block" variant="button" color="white" my={1}>
-                        Enter your email and password to register
+                        Enter your details to register
                     </MDTypography>
                 </MDBox>
                 <MDBox pt={4} pb={3} px={3}>
                     <MDBox component="form" role="form">
                         <MDBox mb={2}>
-                            <MDInput type="text" label="Name" variant="standard" fullWidth />
+                            <MDInput
+                                type="text"
+                                label="Username"
+                                variant="standard"
+                                fullWidth
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                            />
                         </MDBox>
                         <MDBox mb={2}>
-                            <MDInput type="email" label="Email" variant="standard" fullWidth />
+                            <MDInput
+                                type="text"
+                                label="First Name"
+                                variant="standard"
+                                fullWidth
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                type="text"
+                                label="Last Name"
+                                variant="standard"
+                                fullWidth
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                type="email"
+                                label="Email"
+                                variant="standard"
+                                fullWidth
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
                         </MDBox>
                         <MDBox mb={2}>
                             <MDInput
@@ -57,6 +137,18 @@ function Cover() {
                                 label="Password"
                                 variant="standard"
                                 fullWidth
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </MDBox>
+                        <MDBox mb={2}>
+                            <MDInput
+                                type="password"
+                                label="Confirm Password"
+                                variant="standard"
+                                fullWidth
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                             />
                         </MDBox>
                         {/* <MDBox display="flex" alignItems="center" ml={-1}>
@@ -81,8 +173,13 @@ function Cover() {
                             </MDTypography>
                         </MDBox> */}
                         <MDBox mt={4} mb={1}>
-                            <MDButton variant="gradient" color="info" fullWidth>
-                                sign in
+                            <MDButton
+                                variant="gradient"
+                                color="info"
+                                fullWidth
+                                onClick={handleSignUp}
+                            >
+                                sign up
                             </MDButton>
                         </MDBox>
                         <MDBox mt={3} mb={1} textAlign="center">
@@ -103,6 +200,17 @@ function Cover() {
                     </MDBox>
                 </MDBox>
             </Card>
+            <MDSnackbar
+                color={snackbar.severity}
+                icon="notifications"
+                title={snackbar.severity === "success" ? "Hello There!" : "Account Creation Failed"}
+                content={snackbar.message}
+                open={snackbar.open}
+                onClose={handleSnackbarClose}
+                close={handleSnackbarClose}
+                bgWhite
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            />
         </CoverLayout>
     );
 }

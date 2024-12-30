@@ -113,6 +113,57 @@ class MasterSheetDb {
         utils.book_append_sheet(workbook, worksheet, "MasterSheetDb");
         writeFile(workbook, filename);
     }
+
+    async getUser(email, value) {
+        await this.loadSpreadsheets();
+        const usersSpreadsheet = await this.getFilteredSpreadsheets([[1, "Users"]]);
+        const users = await this.spreadsheetService.getFilteredRows(
+            usersSpreadsheet[0][4],
+            "Users",
+            [[4, email]]
+        );
+        return users.length > 0 ? users[0] : null;
+    }
+
+    async createUser(username, firstName, lastName, email, preferredColor, password) {
+        await this.loadSpreadsheets();
+        const usersSpreadsheet = await this.getFilteredSpreadsheets([[1, "Users"]]);
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            throw new Error("Invalid email format");
+        }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            throw new Error(
+                "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one number"
+            );
+        }
+
+        const existingUser = await this.getUser(email);
+        if (existingUser) {
+            throw new Error("User with this email already exists");
+        }
+
+        const dateJoined = new Date().toISOString();
+        const dateActive = new Date().toISOString();
+        const newUser = [
+            username,
+            "Users",
+            firstName,
+            lastName,
+            email,
+            preferredColor,
+            dateJoined,
+            dateActive,
+            password,
+        ];
+
+        await this.spreadsheetService.appendValues(usersSpreadsheet[0][4], "Users", [newUser]);
+
+        return newUser;
+    }
 }
 
 export default MasterSheetDb;

@@ -1,4 +1,5 @@
-import { useState } from "react";
+// React components
+import { useState, useEffect } from "react";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
@@ -20,6 +21,7 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
 import MDBox from "components/MDBox";
+import MDSnackbar from "components/MDSnackbar";
 
 // Authentication layout components
 import BasicLayout from "layouts/authentication/components/BasicLayout";
@@ -27,18 +29,52 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
+import MasterSheetDb from "utils/MasterSheetDb";
+
 function Basic() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
 
     const [rememberMe, setRememberMe] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
     const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
-    const handleSignIn = () => {
-        setTimeout(() => {
-            window.location.href = "/dashboard";
-        }, 300);
+    const masterSheetDb = new MasterSheetDb(); // Initialize MasterSheetDb
+
+    const handleSnackbarClose = () => {
+        setSnackbar({ ...snackbar, open: false });
+    };
+
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    // Clear local storage variable "user" if it exists
+    useEffect(() => {
+        if (localStorage.getItem("user")) {
+            localStorage.removeItem("user");
+        }
+    }, []);
+
+    const handleSignIn = async () => {
+        try {
+            const user = await masterSheetDb.getUser(email);
+            console.log("Comparing user and password", user, password);
+            if (user && user[8] === password) {
+                localStorage.setItem("user", JSON.stringify(user));
+                setTimeout(() => {
+                    window.location.href = "/dashboard";
+                }, 300);
+                showSnackbar(`Welcome ${user[0]}!`, "success");
+            } else {
+                showSnackbar("Invalid email or password", "error");
+            }
+        } catch (error) {
+            showSnackbar(`Error: ${error.message}`, "error");
+        }
     };
 
     return (
@@ -82,10 +118,22 @@ function Basic() {
                 <MDBox pt={4} pb={3} px={3}>
                     <MDBox component="form" role="form">
                         <MDBox mb={2}>
-                            <MDInput type="email" label="Email" fullWidth />
+                            <MDInput
+                                type="email"
+                                label="Email"
+                                fullWidth
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
                         </MDBox>
                         <MDBox mb={2}>
-                            <MDInput type="password" label="Password" fullWidth />
+                            <MDInput
+                                type="password"
+                                label="Password"
+                                fullWidth
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
                         </MDBox>
                         {/* <MDBox display="flex" alignItems="center" ml={-1}>
                             <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -127,6 +175,17 @@ function Basic() {
                     </MDBox>
                 </MDBox>
             </Card>
+            <MDSnackbar
+                color={snackbar.severity}
+                icon="notifications"
+                title={snackbar.severity === "success" ? "Log In Successful" : "Log In Failed"}
+                content={snackbar.message}
+                open={snackbar.open}
+                onClose={handleSnackbarClose}
+                close={handleSnackbarClose}
+                bgWhite
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            />
         </BasicLayout>
     );
 }
