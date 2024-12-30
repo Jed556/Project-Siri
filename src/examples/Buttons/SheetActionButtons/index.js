@@ -137,7 +137,7 @@ function handlePrint(data, spreadsheetId) {
     spreadsheetService
         .getSpreadsheetValues(spreadsheetId, data.sheetName)
         .then((response) => {
-            console.log(response);
+            //console.log(response);
             const rows = response.values || [];
             data.rows = rows;
 

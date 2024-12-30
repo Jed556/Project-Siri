@@ -62,7 +62,7 @@ function Basic() {
     const handleSignIn = async () => {
         try {
             const user = await masterSheetDb.getUser(email);
-            console.log("Comparing user and password", user, password);
+            // console.log("Comparing user and password", user, password);
             if (user && user[8] === password) {
                 localStorage.setItem("user", JSON.stringify(user));
                 setTimeout(() => {

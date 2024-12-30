@@ -29,7 +29,7 @@ function Dashboard() {
     const { sidenavColor } = controller;
 
     const { sales, tasks } = reportsLineChartData;
-    console.log(configs.footer.company);
+    //console.log(configs.footer.company);
 
     return (
         <DashboardLayout>
