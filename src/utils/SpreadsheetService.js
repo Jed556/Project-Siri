@@ -99,7 +99,7 @@ class SpreadsheetService {
         return response.json();
     }
 
-    async getFilteredSheets(spreadsheetId, range, filters) {
+    async getFilteredRows(spreadsheetId, range, filters) {
         const response = await this.getSpreadsheetValues(spreadsheetId, range);
         const values = response.values || [];
         return values.filter((sheet) => {

@@ -2,34 +2,34 @@ import { utils, writeFile } from "xlsx";
 import SpreadsheetService from "utils/SpreadsheetService";
 
 const apiCo = {
-    MasterSheetId: process.env.REACT_APP_APICO_MASTER_SPREADSHEET_ID,
+    MasterSpreadsheetId: process.env.REACT_APP_APICO_MASTER_SPREADSHEET_ID,
 };
 
 class MasterSheetDb {
     constructor() {
-        this.sheets = [];
+        this.spreadsheets = [];
         this.spreadsheetService = new SpreadsheetService();
-        this.loadSheets();
+        this.loadSpreadsheets();
     }
 
-    async loadSheets() {
+    async loadSpreadsheets() {
         try {
             const data = await this.spreadsheetService.getSpreadsheetValues(
-                apiCo.MasterSheetId,
+                apiCo.MasterSpreadsheetId,
                 "MasterSheet"
             );
-            this.sheets = data.values || [];
+            this.spreadsheets = data.values || [];
         } catch (err) {
-            console.error("Failed to load sheets:", err);
+            console.error("Failed to load spreadsheet:", err);
         }
     }
 
-    async saveSheets() {
+    async saveSpreadsheets() {
         try {
             await this.spreadsheetService.updateSpreadsheetValues(
-                apiCo.MasterSheetId,
+                apiCo.MasterSpreadsheetId,
                 "MasterSheet",
-                this.sheets
+                this.spreadsheets
             );
             await this.autoResizeColumns();
         } catch (err) {
@@ -39,16 +39,16 @@ class MasterSheetDb {
 
     async autoResizeColumns() {
         try {
-            const sheetId = await this.spreadsheetService.getSheetId(
-                apiCo.MasterSheetId,
+            const spreadsheetId = await this.spreadsheetService.getSheetId(
+                apiCo.MasterSpreadsheetId,
                 "MasterSheet"
             );
-            const longestRow = this.sheets.reduce((maxRow, currentRow) => {
+            const longestRow = this.spreadsheets.reduce((maxRow, currentRow) => {
                 return currentRow.length > maxRow.length ? currentRow : maxRow;
             }, []);
             await this.spreadsheetService.autoResizeColumns(
-                apiCo.MasterSheetId,
-                sheetId,
+                apiCo.MasterSpreadsheetId,
+                spreadsheetId,
                 0,
                 longestRow.length
             );
@@ -57,54 +57,58 @@ class MasterSheetDb {
         }
     }
 
-    async appendSheetData(name, type, dateCreated, creator, sheetId, isTrashed = false) {
-        this.loadSheets();
-        this.sheets.push([name, type, dateCreated, creator, sheetId, isTrashed]);
-        await this.saveSheets();
+    async appendSpreadsheet(name, type, dateCreated, creator, spreadsheetId, isTrashed = false) {
+        await this.loadSpreadsheets();
+        this.spreadsheets.push([name, type, dateCreated, creator, spreadsheetId, isTrashed]);
+        await this.saveSpreadsheets();
     }
 
-    openSheetUrl(sheetId) {
-        this.loadSheets();
-        const sheet = this.sheets.find((sheet) => sheet[4] === sheetId);
-        if (sheet) {
-            const url = `https://docs.google.com/spreadsheets/d/${sheetId}`;
+    async openSpreadsheetUrl(spreadsheetId) {
+        await this.loadSpreadsheets();
+        const spreadsheet = this.spreadsheets.find(
+            (spreadsheet) => spreadsheet[4] === spreadsheetId
+        );
+        if (spreadsheet) {
+            const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`;
             window.open(url, "_blank");
         } else {
-            console.error("Sheet not found");
+            console.error("Spreadsheet not found");
         }
     }
 
-    async markSheetAsTrashed(sheetId) {
-        this.loadSheets();
-        const sheet = this.sheets.find((sheet) => sheet[4] === sheetId);
-        if (sheet) {
-            sheet[5] = true;
-            await this.saveSheets();
+    async markSpreadsheetAsTrashed(spreadsheetId) {
+        await this.loadSpreadsheets();
+        const spreadsheet = this.spreadsheets.find(
+            (spreadsheet) => spreadsheet[4] === spreadsheetId
+        );
+        if (spreadsheet) {
+            spreadsheet[5] = true;
+            await this.saveSpreadsheets();
         } else {
-            console.error("Sheet not found");
+            console.error("Spreadsheet not found");
         }
     }
 
-    getAllUntrashedSheets() {
-        this.loadSheets();
-        return this.sheets.filter((sheet) => !sheet[5]);
+    async getAllUntrashedSpreadsheets() {
+        await this.loadSpreadsheets();
+        return this.spreadsheets.filter((spreadsheet) => !spreadsheet[5]);
     }
 
-    getTrashedSheets() {
-        this.loadSheets();
-        return this.sheets.filter((sheet) => sheet[5]);
+    async getTrashedSpreadsheets() {
+        await this.loadSpreadsheets();
+        return this.spreadsheets.filter((spreadsheet) => spreadsheet[5]);
     }
 
-    getFilteredSheets(filters) {
-        this.loadSheets();
-        return this.sheets.filter((sheet) => {
-            return filters.every(([index, value]) => sheet[index] === value);
+    async getFilteredSpreadsheets(filters) {
+        await this.loadSpreadsheets();
+        return this.spreadsheets.filter((spreadsheet) => {
+            return filters.every(([index, value]) => spreadsheet[index] === value);
         });
     }
 
     exportToFile(filename = "MasterSheetDb.xlsx") {
-        this.loadSheets();
-        const worksheet = utils.aoa_to_sheet(this.sheets);
+        this.loadSpreadsheets();
+        const worksheet = utils.aoa_to_sheet(this.spreadsheets);
         const workbook = utils.book_new();
         utils.book_append_sheet(workbook, worksheet, "MasterSheetDb");
         writeFile(workbook, filename);

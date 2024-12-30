@@ -33,13 +33,16 @@ import SpreadsheetService from "utils/SpreadsheetService";
 const masterSheetDb = new MasterSheetDb();
 const spreadsheetService = new SpreadsheetService();
 
-const fetchSheets = async (setSheets, type, author) => {
+const fetchSpreadsheets = async (setSpreadsheets, type, author, notTrashedOnly = false) => {
     const filters = [
-        [3, author], // Assuming index 3 is the author
-        [1, type], // Assuming index 1 is the type
+        [3, author],
+        [1, type],
     ];
-    const filteredSheets = await masterSheetDb.getFilteredSheets(filters);
-    setSheets(filteredSheets);
+    if (notTrashedOnly) {
+        filters.push([5, "FALSE"]);
+    }
+    const filteredSpreadsheets = await masterSheetDb.getFilteredSpreadsheets(filters);
+    setSpreadsheets(filteredSpreadsheets);
 };
 
 function getLongestRow(rows) {
@@ -52,7 +55,7 @@ function getLongestRow(rows) {
 function makeWebSheet(data) {
     const worksheet = utils.aoa_to_sheet(data.rows);
     const workbook = utils.book_new();
-    utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    utils.book_append_sheet(workbook, worksheet, data.sheetName);
 
     // Apply column width
     const colWidths = data.rows.reduce((widths, row) => {
@@ -87,8 +90,13 @@ function makeWebSheet(data) {
     return workbook;
 }
 
-async function handleSubmit(data, author, selectedSheet, setSheets, setSelectedSheet) {
-    let spreadsheetId = selectedSheet;
+async function handleSubmit(
+    data,
+    selectedSpreadsheet,
+    setSelectedSpreadsheet,
+    user
+) {
+    let spreadsheetId = selectedSpreadsheet;
     if (!spreadsheetId || spreadsheetId === "new") {
         const response = await spreadsheetService.createSpreadsheet({
             properties: { title: data.fileName },
@@ -104,12 +112,11 @@ async function handleSubmit(data, author, selectedSheet, setSheets, setSelectedS
         });
         spreadsheetId = response.spreadsheetId;
 
-        await masterSheetDb.loadSheets();
-        await masterSheetDb.appendSheetData(
+        await masterSheetDb.appendSpreadsheet(
             data.fileName,
             data.type,
             new Date().toISOString(),
-            "creator",
+            user.username,
             spreadsheetId
         );
     }
@@ -121,9 +128,7 @@ async function handleSubmit(data, author, selectedSheet, setSheets, setSelectedS
         0,
         longestRow.length
     );
-    setSelectedSheet(spreadsheetId);
-    localStorage.setItem("currentSheetId", spreadsheetId);
-    fetchSheets(setSheets, data.type, author); // Refresh the sheets after submission
+    setSelectedSpreadsheet(spreadsheetId);
 }
 
 function handleDownload(data) {
@@ -156,32 +161,41 @@ function handlePrint(data, spreadsheetId) {
         .catch((err) => console.error(err));
 }
 
-function SheetActionButtons({ data, readonly }) {
+function handleDelete(spreadsheetId, fetchSpreadsheets) {
+    masterSheetDb.markSpreadsheetAsTrashed(spreadsheetId);
+}
+
+function SheetActionButtons({ data, readonly, onSheetChange }) {
     // The useMaterialUIController hook is used to access the Material UI controller
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
 
-    const [selectedSheet, setSelectedSheet] = useState("new");
-    const [sheets, setSheets] = useState([]);
+    const [selectedSpreadsheet, setSelectedSpreadsheet] = useState("new");
+    const [spreadsheets, setSpreadsheets] = useState([]);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
+    const user = JSON.parse(localStorage.getItem("user"));
+
     useEffect(() => {
-        fetchSheets(setSheets, data.type, "creator");
+        fetchSpreadsheets(setSpreadsheets, data.type, user.username, true);
     }, []);
 
-    const handleSheetChange = (event) => {
-        const sheetId = event.target.value;
-        setSelectedSheet(sheetId);
-        localStorage.setItem("currentSheetId", sheetId);
-        console.log("Selected sheet:", sheetId);
+    const handleSpreadsheetChange = (event) => {
+        const spreadsheetId = event.target.value;
+        setSelectedSpreadsheet(spreadsheetId);
+        if (onSheetChange) {
+            onSheetChange(spreadsheetId, data.sheetName);
+        }
     };
 
-    const getSelectedSheetName = () => {
-        if (selectedSheet === "new") {
+    const getSelectedSpreadsheetName = () => {
+        if (selectedSpreadsheet === "new") {
             return "New Sheet";
         }
-        const sheet = sheets.find((sheet) => sheet[4] === selectedSheet);
-        return sheet ? `${sheet[0]}` : "";
+        const spreadsheet = spreadsheets.find(
+            (spreadsheet) => spreadsheet[4] === selectedSpreadsheet
+        );
+        return spreadsheet ? `${spreadsheet[0]}` : "";
     };
 
     const handleSnackbarClose = () => {
@@ -192,9 +206,15 @@ function SheetActionButtons({ data, readonly }) {
         setSnackbar({ open: true, message, severity });
     };
 
-    const handleAction = async (action, sMessage, fMessage) => {
+    const handleAction = async (actions, sMessage, fMessage) => {
         try {
-            await action();
+            if (Array.isArray(actions)) {
+                for (const action of actions) {
+                    await action();
+                }
+            } else {
+                await actions();
+            }
             showSnackbar(sMessage, "success");
         } catch (error) {
             showSnackbar(fMessage, "error");
@@ -204,10 +224,10 @@ function SheetActionButtons({ data, readonly }) {
     return (
         <MDBox py={3} px={2} textAlign="center">
             <Select
-                value={selectedSheet}
-                onChange={handleSheetChange}
+                value={selectedSpreadsheet}
+                onChange={handleSpreadsheetChange}
                 displayEmpty
-                renderValue={getSelectedSheetName}
+                renderValue={getSelectedSpreadsheetName}
                 input={<Input />}
                 style={{
                     marginRight: readonly ? 0 : 10,
@@ -231,9 +251,9 @@ function SheetActionButtons({ data, readonly }) {
                 }}
             >
                 <MenuItem value="new">New Sheet</MenuItem>
-                {sheets.map((sheet) => (
-                    <MenuItem key={sheet[4]} value={sheet[4]}>
-                        {sheet[0]}
+                {spreadsheets.map((spreadsheet) => (
+                    <MenuItem key={spreadsheet[4]} value={spreadsheet[4]}>
+                        {spreadsheet[0]}
                     </MenuItem>
                 ))}
             </Select>
@@ -242,9 +262,12 @@ function SheetActionButtons({ data, readonly }) {
                 color={sidenavColor}
                 onClick={() =>
                     handleAction(
-                        () => fetchSheets(setSheets, data.type, "creator"),
-                        "Sheets refreshed",
-                        "Failed to refresh sheets"
+                        [
+                            () => fetchSpreadsheets(setSpreadsheets, data.type, user.username, true),
+                            () => onSheetChange(selectedSpreadsheet, data.sheetName),
+                        ],
+                        "Spreadsheets refreshed",
+                        "Failed to refresh spreadsheets"
                     )
                 }
                 style={{ marginLeft: 10 }}
@@ -260,18 +283,19 @@ function SheetActionButtons({ data, readonly }) {
                             () =>
                                 handleSubmit(
                                     data,
-                                    "creator",
-                                    selectedSheet,
-                                    setSheets,
-                                    setSelectedSheet
+                                    selectedSpreadsheet,
+                                    setSelectedSpreadsheet,
+                                    user
                                 ),
-                            `Sheet ${selectedSheet === "new" ? "created" : "updated"} successfully`,
-                            `Failed to ${selectedSheet === "new" ? "create" : "update"} sheet`
+                            `Spreadsheet ${selectedSpreadsheet === "new" ? "created" : "updated"
+                            } successfully`,
+                            `Failed to ${selectedSpreadsheet === "new" ? "create" : "update"
+                            } spreadsheet`
                         )
                     }
                     style={{ marginLeft: 10 }}
                 >
-                    {selectedSheet === "new" ? "New Google Sheet" : "Save Google Sheet"}
+                    {selectedSpreadsheet === "new" ? "New Google Sheet" : "Save Google Sheet"}
                 </MDButton>
             )}
             <MDButton
@@ -285,7 +309,7 @@ function SheetActionButtons({ data, readonly }) {
                     )
                 }
                 style={{ marginLeft: 10 }}
-                disabled={selectedSheet === "new"}
+                disabled={selectedSpreadsheet === "new"}
             >
                 Download XLS
             </MDButton>
@@ -294,13 +318,13 @@ function SheetActionButtons({ data, readonly }) {
                 color={sidenavColor}
                 onClick={() =>
                     handleAction(
-                        () => handlePrint(data, selectedSheet),
+                        () => handlePrint(data, selectedSpreadsheet),
                         "Printing...",
                         "Failed to print"
                     )
                 }
                 style={{ marginLeft: 10 }}
-                disabled={selectedSheet === "new"}
+                disabled={selectedSpreadsheet === "new"}
             >
                 Print
             </MDButton>
@@ -309,15 +333,30 @@ function SheetActionButtons({ data, readonly }) {
                 color={sidenavColor}
                 onClick={() =>
                     handleAction(
-                        () => spreadsheetService.openSpreadsheetInNewTab(selectedSheet),
+                        () => spreadsheetService.openSpreadsheetInNewTab(selectedSpreadsheet),
                         "Redirecting...",
                         "Failed to redirect"
                     )
                 }
                 style={{ marginLeft: 10 }}
-                disabled={selectedSheet === "new"}
+                disabled={selectedSpreadsheet === "new"}
             >
                 Open Sheet
+            </MDButton>
+            <MDButton
+                variant="contained"
+                color="error"
+                onClick={() =>
+                    handleAction(
+                        () => handleDelete(selectedSpreadsheet, setSpreadsheets),
+                        "Spreadsheet deleted successfully",
+                        "Failed to delete spreadsheet"
+                    )
+                }
+                style={{ marginLeft: 10 }}
+                disabled={selectedSpreadsheet === "new"}
+            >
+                Delete Sheet
             </MDButton>
             <MDSnackbar
                 color={snackbar.severity}
@@ -335,18 +374,20 @@ function SheetActionButtons({ data, readonly }) {
 
 SheetActionButtons.defaultProps = {
     data: {
-        wbTitle: "Untitled Workbook",
+        spreadsheetTitle: "Untitled Spreadsheet",
         sheetName: "Sheet1",
         fileName: "New Spreadsheet",
         type: "",
         sheetId: "",
         rows: [],
     },
+    readonly: false,
+    onSheetChange: null,
 };
 
 SheetActionButtons.propTypes = {
     data: PropTypes.shape({
-        wbTitle: PropTypes.string,
+        spreadsheetTitle: PropTypes.string,
         sheetName: PropTypes.string,
         fileName: PropTypes.string,
         type: PropTypes.string,
@@ -354,6 +395,7 @@ SheetActionButtons.propTypes = {
         rows: PropTypes.arrayOf(PropTypes.array).isRequired,
     }),
     readonly: PropTypes.bool, // Added propTypes validation for readonly
+    onSheetChange: PropTypes.func, // Add propTypes validation for onSheetChange
 };
 
 export default SheetActionButtons;

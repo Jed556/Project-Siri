@@ -46,48 +46,6 @@ function WeeklyItinerary() {
         },
     });
 
-    useEffect(() => {
-        const currentSheetId = localStorage.getItem("currentSheetId");
-        if (currentSheetId) {
-            // Load the sheet data using the currentSheetId
-            spreadsheetService.getSpreadsheetValues(currentSheetId, "Sheet1").then((response) => {
-                const values = response.values || [];
-                const newState = {
-                    week: values[0] && values[0][1] ? values[0][1] : "",
-                    objectives: values[1] && values[1][1] ? values[1][1] : "",
-                    deadlines: values[2] && values[2][1] ? values[2][1] : "",
-                    dailyRemarks: {
-                        Monday: {
-                            date: values[3] && values[3][1] ? parseISO(values[3][1]) : null,
-                            remarks: values[3] && values[3][2] ? values[3][2] : "",
-                        },
-                        Tuesday: {
-                            date: values[4] && values[4][1] ? parseISO(values[4][1]) : null,
-                            remarks: values[4] && values[4][2] ? values[4][2] : "",
-                        },
-                        Wednesday: {
-                            date: values[5] && values[5][1] ? parseISO(values[5][1]) : null,
-                            remarks: values[5] && values[5][2] ? values[5][2] : "",
-                        },
-                        Thursday: {
-                            date: values[6] && values[6][1] ? parseISO(values[6][1]) : null,
-                            remarks: values[6] && values[6][2] ? values[6][2] : "",
-                        },
-                        Friday: {
-                            date: values[7] && values[7][1] ? parseISO(values[7][1]) : null,
-                            remarks: values[7] && values[7][2] ? values[7][2] : "",
-                        },
-                        Saturday: {
-                            date: values[8] && values[8][1] ? parseISO(values[8][1]) : null,
-                            remarks: values[8] && values[8][2] ? values[8][2] : "",
-                        },
-                    },
-                };
-                setState(newState);
-            });
-        }
-    }, []);
-
     const handleInputChange = (field, value, day = null) => {
         if (day) {
             setState((prevState) => ({
@@ -107,10 +65,52 @@ function WeeklyItinerary() {
             }));
         }
     };
+
+    const handleSheetChange = (spreadsheetId, sheetName) => {
+        if (spreadsheetId) {
+            // Load the sheet data using the currentSpreadsheetId
+            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
+                const values = response.values || [];
+                setState({
+                    week: values[0] && values[0][1] ? values[0][1] : "",
+                    objectives: values[1] && values[1][1] ? values[1][1] : "",
+                    deadlines: values[2] && values[2][1] ? values[2][1] : "",
+                    dailyRemarks: {
+                        Monday: {
+                            date: values[3] && values[3][1] ? new Date(values[3][1]) : null,
+                            remarks: values[3] && values[3][2] ? values[3][2] : "",
+                        },
+                        Tuesday: {
+                            date: values[4] && values[4][1] ? new Date(values[4][1]) : null,
+                            remarks: values[4] && values[4][2] ? values[4][2] : "",
+                        },
+                        Wednesday: {
+                            date: values[5] && values[5][1] ? new Date(values[5][1]) : null,
+                            remarks: values[5] && values[5][2] ? values[5][2] : "",
+                        },
+                        Thursday: {
+                            date: values[6] && values[6][1] ? new Date(values[6][1]) : null,
+                            remarks: values[6] && values[6][2] ? values[6][2] : "",
+                        },
+                        Friday: {
+                            date: values[7] && values[7][1] ? new Date(values[7][1]) : null,
+                            remarks: values[7] && values[7][2] ? values[7][2] : "",
+                        },
+                        Saturday: {
+                            date: values[8] && values[8][1] ? new Date(values[8][1]) : null,
+                            remarks: values[8] && values[8][2] ? values[8][2] : "",
+                        },
+                    },
+                });
+            });
+        }
+    };
+    handleSheetChange();
+
     function formatTableData() {
         return {
-            wbTitle: "Weekly Itinerary",
-            sheetName: `Weekly_Itinerary_${state.week}`,
+            spreadsheetTitle: "Weekly Itinerary",
+            sheetName: "Weekly Itinerary",
             fileName: `Weekly_Itinerary_${new Date().toISOString().replace(/[:.]/g, "-")}`,
             type: "Weekly Itinerary",
             rows: [
@@ -232,7 +232,10 @@ function WeeklyItinerary() {
                                     </MDBox>
                                 ))}
                             </LocalizationProvider>
-                            <SheetActionButtons data={formatTableData()} />
+                            <SheetActionButtons
+                                data={formatTableData()}
+                                onSheetChange={handleSheetChange}
+                            />
                         </Card>
                     </Grid>
                 </Grid>
