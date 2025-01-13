@@ -184,7 +184,7 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
 
     const getSelectedSpreadsheetName = () => {
         if (selectedSpreadsheet === "new") {
-            return "New Sheet";
+            return "History";
         }
         const spreadsheet = spreadsheets.find(
             (spreadsheet) => spreadsheet[4] === selectedSpreadsheet
@@ -284,17 +284,15 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
                                     ),
                                 () => fetchSpreadsheets(setSpreadsheets, data.type, user[4], true),
                             ],
-                            `Spreadsheet ${
-                                selectedSpreadsheet === "new" ? "created" : "updated"
+                            `Spreadsheet ${selectedSpreadsheet === "new" ? "created" : "updated"
                             } successfully`,
-                            `Failed to ${
-                                selectedSpreadsheet === "new" ? "create" : "update"
+                            `Failed to ${selectedSpreadsheet === "new" ? "create" : "update"
                             } spreadsheet`
                         )
                     }
                     style={{ marginLeft: 10 }}
                 >
-                    {selectedSpreadsheet === "new" ? "New Google Sheet" : "Save Google Sheet"}
+                    {selectedSpreadsheet === "new" ? "Save to Google Sheets" : "Save to Google Sheet"}
                 </MDButton>
             )}
             <MDButton
