@@ -57,7 +57,7 @@ function CoverLayout({ coverHeight, image, children }) {
                     </Grid>
                 </Grid>
             </MDBox>
-            {/* <Footer company={configs.footer.company} />
+            {/* <Footer company="" />
              */}
         </PageLayout>
     );

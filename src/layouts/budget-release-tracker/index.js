@@ -152,7 +152,7 @@ function BudgetReleaseTracker() {
                     </Grid>
                 </Grid>
             </MDBox>
-            <Footer company={configs.footer.company} />
+            <Footer company="" />
         </DashboardLayout>
     );
 }

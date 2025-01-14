@@ -74,7 +74,7 @@ function Billing() {
                     </Grid>
                 </MDBox>
             </MDBox>
-            <Footer company={configs.footer.company} />
+            <Footer company="" />
         </DashboardLayout>
     );
 }

@@ -187,7 +187,7 @@ function TrainingCommencement() {
                     </Grid>
                 </Grid>
             </MDBox>
-            <Footer company={configs.footer.company} />
+            <Footer company="" />
         </DashboardLayout>
     );
 }

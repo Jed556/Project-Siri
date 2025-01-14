@@ -184,7 +184,7 @@ function Overview() {
                     </Grid>
                 </MDBox>
             </Header>
-            <Footer company={configs.footer.company} />
+            <Footer company="" />
         </DashboardLayout>
     );
 }
