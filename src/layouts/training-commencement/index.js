@@ -1,5 +1,5 @@
 // React components
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -22,116 +22,127 @@ import Footer from "examples/Footer";
 // Configs
 import configs from "config";
 
+import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+
+const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+
 function TrainingCommencement() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
 
     const [rows, setRows] = useState([{}]);
+    const [data, setData] = useState([]);
 
     const addNewRow = () => {
         setRows([...rows, {}]);
     };
+
+    const columns = [
+        { Header: "ACCOUNT", accessor: "account", placeholder: "Account Name", type: "text" },
+        { Header: "TRAINING", accessor: "training", placeholder: "Training", type: "text" },
+        {
+            Header: "TRAINING DATE",
+            accessor: "trainingDate",
+            placeholder: "Training Date",
+            type: "date",
+        },
+        { Header: "NO. OF DAYS", accessor: "noOfDays", placeholder: "No. of Days", type: "number" },
+        { Header: "INCLUSIONS", accessor: "inclusions", placeholder: "Inclusions", type: "text" },
+        {
+            Header: "OFFICIAL RATE",
+            accessor: "officialRate",
+            placeholder: "Official Rate",
+            type: "number",
+        },
+        {
+            Header: "FEES BREAKDOWN",
+            accessor: "feesBreakdown",
+            placeholder: "Fees Breakdown",
+            type: "text",
+        },
+        { Header: "REMARKS", accessor: "remarks", placeholder: "Remarks", type: "text" },
+    ];
 
     const handleInputChange = (index, field, value) => {
         const updatedRows = rows.map((row, i) => (i === index ? { ...row, [field]: value } : row));
         setRows(updatedRows);
     };
 
+    const createRowInputs = (rows, columns) => {
+        const newData = rows.map((row, index) => {
+            const rowData = {};
+            columns.forEach((column) => {
+                rowData[column.accessor] = (
+                    <MDInput
+                        fullWidth
+                        type={column.type}
+                        placeholder={column.placeholder}
+                        value={row[column.accessor] || ""}
+                        onChange={(e) => handleInputChange(index, column.accessor, e.target.value)}
+                    />
+                );
+            });
+            return rowData;
+        });
+        setData(newData);
+    };
+
+    useEffect(() => {
+        createRowInputs(rows, columns);
+    }, [rows]);
+
     function formatTableData() {
         return {
-            name: "Training_Commencement",
-            rows: rows.map((row) => ({
-                Account: row.account || "",
-                Training: row.training || "",
-                "Training Date": row.trainingDate || "",
-                "No. of Days": row.noOfDays || "",
-                Inclusions: row.inclusions || "",
-                "Official Rate": row.officialRate || "",
-                "Fees Breakdown": row.feesBreakdown || "",
-                Remarks: row.remarks || "",
-            })),
+            spreadsheetTitle: "Training_Commencement",
+            sheetName: "Training_Commencement",
+            fileName: `Training_Commencement_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Training Commencement",
+            rows: [
+                [
+                    "Account",
+                    "Training",
+                    "Training Date",
+                    "No. of Days",
+                    "Inclusions",
+                    "Official Rate",
+                    "Fees Breakdown",
+                    "Remarks",
+                ],
+                ...rows.map((row) => [
+                    row.account || "",
+                    row.training || "",
+                    row.trainingDate || "",
+                    row.noOfDays || "",
+                    row.inclusions || "",
+                    row.officialRate || "",
+                    row.feesBreakdown || "",
+                    row.remarks || "",
+                ]),
+            ],
         };
     }
 
-    const columns = [
-        { Header: "ACCOUNT", accessor: "account" },
-        { Header: "TRAINING", accessor: "training" },
-        { Header: "TRAINING DATE", accessor: "trainingDate" },
-        { Header: "NO. OF DAYS", accessor: "noOfDays" },
-        { Header: "INCLUSIONS", accessor: "inclusions" },
-        { Header: "OFFICIAL RATE", accessor: "officialRate" },
-        { Header: "FEES BREAKDOWN", accessor: "feesBreakdown" },
-        { Header: "REMARKS", accessor: "remarks" },
-    ];
+    const handleSheetChange = (spreadsheetId, sheetName) => {
+        if (spreadsheetId) {
+            // Load the sheet data using the currentSpreadsheetId
+            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
+                const values = response.values || [];
+                const updatedRows = values.slice(1).map((row) => ({
+                    account: row[0] || "",
+                    training: row[1] || "",
+                    trainingDate: row[2] || "",
+                    noOfDays: row[3] || "",
+                    inclusions: row[4] || "",
+                    officialRate: row[5] || "",
+                    feesBreakdown: row[6] || "",
+                    remarks: row[7] || "",
+                }));
 
-    const data = rows.map((row, index) => ({
-        account: (
-            <MDInput
-                fullWidth
-                placeholder="Account"
-                value={row.account || ""}
-                onChange={(e) => handleInputChange(index, "account", e.target.value)}
-            />
-        ),
-        training: (
-            <MDInput
-                fullWidth
-                placeholder="Training"
-                value={row.training || ""}
-                onChange={(e) => handleInputChange(index, "training", e.target.value)}
-            />
-        ),
-        trainingDate: (
-            <MDInput
-                fullWidth
-                type="date"
-                value={row.trainingDate || ""}
-                onChange={(e) => handleInputChange(index, "trainingDate", e.target.value)}
-            />
-        ),
-        noOfDays: (
-            <MDInput
-                fullWidth
-                type="number"
-                placeholder="No. of Days"
-                value={row.noOfDays || ""}
-                onChange={(e) => handleInputChange(index, "noOfDays", e.target.value)}
-            />
-        ),
-        inclusions: (
-            <MDInput
-                fullWidth
-                placeholder="Inclusions"
-                value={row.inclusions || ""}
-                onChange={(e) => handleInputChange(index, "inclusions", e.target.value)}
-            />
-        ),
-        officialRate: (
-            <MDInput
-                fullWidth
-                type="number"
-                placeholder="Official Rate"
-                value={row.officialRate || ""}
-                onChange={(e) => handleInputChange(index, "officialRate", e.target.value)}
-            />
-        ),
-        feesBreakdown: (
-            <MDInput
-                fullWidth
-                placeholder="Fees Breakdown"
-                value={row.feesBreakdown || ""}
-                onChange={(e) => handleInputChange(index, "feesBreakdown", e.target.value)}
-            />
-        ),
-        remarks: (
-            <MDInput
-                fullWidth
-                placeholder="Remarks"
-                value={row.remarks || ""}
-                onChange={(e) => handleInputChange(index, "remarks", e.target.value)}
-            />
-        ),
-    }));
+                setRows(updatedRows);
+            });
+        }
+    };
+    handleSheetChange();
 
     return (
         <DashboardLayout>
@@ -168,7 +179,10 @@ function TrainingCommencement() {
                                     Add New Row
                                 </MDButton>
                             </MDBox>
-                            <SheetActionButtons sheetId="" data={formatTableData()} />
+                            <SheetActionButtons
+                                data={formatTableData()}
+                                onSheetChange={handleSheetChange}
+                            />
                         </Card>
                     </Grid>
                 </Grid>

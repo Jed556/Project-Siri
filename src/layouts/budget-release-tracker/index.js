@@ -1,5 +1,5 @@
 // React components
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -27,70 +27,87 @@ function BudgetReleaseTracker() {
     const { sidenavColor } = controller;
 
     const [rows, setRows] = useState([{}]);
+    const [data, setData] = useState([]);
+
+    const addNewRow = () => {
+        setRows([...rows, {}]);
+    };
+
+    const columns = [
+        { Header: "WHEN", accessor: "when", placeholder: "When", type: "text" },
+        { Header: "WHO", accessor: "who", placeholder: "Who", type: "text" },
+        { Header: "WHAT", accessor: "what", placeholder: "What", type: "text" },
+        {
+            Header: "AMOUNT RELEASED",
+            accessor: "amount",
+            placeholder: "Amount Released",
+            type: "text",
+        },
+    ];
 
     const handleInputChange = (index, field, value) => {
         const updatedRows = rows.map((row, i) => (i === index ? { ...row, [field]: value } : row));
         setRows(updatedRows);
     };
 
-    const addNewRow = () => {
-        setRows([...rows, { when: "", who: "", what: "", amount: "" }]);
+    const createRowInputs = (rows, columns) => {
+        const newData = rows.map((row, index) => {
+            const rowData = {};
+            columns.forEach((column) => {
+                rowData[column.accessor] = (
+                    <MDInput
+                        fullWidth
+                        type={column.type}
+                        placeholder={column.placeholder}
+                        value={row[column.accessor] || ""}
+                        onChange={(e) => handleInputChange(index, column.accessor, e.target.value)}
+                    />
+                );
+            });
+            return rowData;
+        });
+        setData(newData);
     };
 
-    const saveAsXLS = () => {
-        let table = document.querySelector("table").outerHTML;
-        let blob = new Blob([table], { type: "application/vnd.ms-excel" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "budget_tracker.xls";
-        link.click();
+    useEffect(() => {
+        createRowInputs(rows, columns);
+    }, [rows]);
+
+    function formatTableData() {
+        return {
+            spreadsheetTitle: "Budget_Release_Tracker",
+            sheetName: "Budget_Release_Tracker",
+            fileName: `Budget_Release_Tracker_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Budget Release Tracker",
+            rows: [
+                ["When", "Who", "What", "Amount Released"],
+                ...rows.map((row) => [
+                    row.when || "",
+                    row.who || "",
+                    row.what || "",
+                    row.amount || "",
+                ]),
+            ],
+        };
+    }
+
+    const handleSheetChange = (spreadsheetId, sheetName) => {
+        if (spreadsheetId) {
+            // Load the sheet data using the currentSpreadsheetId
+            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
+                const values = response.values || [];
+                const updatedRows = values.slice(1).map((row) => ({
+                    when: row[0] || "",
+                    who: row[1] || "",
+                    what: row[2] || "",
+                    amount: row[3] || "",
+                }));
+
+                setRows(updatedRows);
+            });
+        }
     };
-
-    const printForm = () => {
-        window.print();
-    };
-
-    const updateDatabase = () => {
-        alert("Database update functionality is not yet implemented.");
-    };
-
-    const columns = [
-        { Header: "WHEN", accessor: "when" },
-        { Header: "WHO", accessor: "who" },
-        { Header: "WHAT", accessor: "what" },
-        { Header: "AMOUNT RELEASED", accessor: "amount" },
-    ];
-
-    const data = rows.map((row, index) => ({
-        when: (
-            <MDInput
-                value={row.when}
-                onChange={(e) => handleInputChange(index, "when", e.target.value)}
-                fullWidth
-            />
-        ),
-        who: (
-            <MDInput
-                value={row.who}
-                onChange={(e) => handleInputChange(index, "who", e.target.value)}
-                fullWidth
-            />
-        ),
-        what: (
-            <MDInput
-                value={row.what}
-                onChange={(e) => handleInputChange(index, "what", e.target.value)}
-                fullWidth
-            />
-        ),
-        amount: (
-            <MDInput
-                value={row.amount}
-                onChange={(e) => handleInputChange(index, "amount", e.target.value)}
-                fullWidth
-            />
-        ),
-    }));
+    handleSheetChange();
 
     return (
         <DashboardLayout>
@@ -127,7 +144,10 @@ function BudgetReleaseTracker() {
                                     Add New Row
                                 </MDButton>
                             </MDBox>
-                            <SheetActionButtons sheetId="" />
+                            <SheetActionButtons
+                                data={formatTableData()}
+                                onSheetChange={handleSheetChange}
+                            />
                         </Card>
                     </Grid>
                 </Grid>

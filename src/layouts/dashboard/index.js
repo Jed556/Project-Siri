@@ -11,6 +11,7 @@ import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import ReportsBarChart from "examples/Charts/BarCharts/ReportsBarChart";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import { PieChart } from "@mui/x-charts/PieChart";
 import Footer from "examples/Footer";
 
 // Configs
@@ -98,7 +99,7 @@ function Dashboard() {
                 </Grid>
                 <MDBox mt={4.5}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={6} lg={4}>
+                        {/* <Grid item xs={12} md={6} lg={4}>
                             <MDBox mb={3}>
                                 <ReportsBarChart
                                     color="info"
@@ -123,7 +124,7 @@ function Dashboard() {
                                     chart={sales}
                                 />
                             </MDBox>
-                        </Grid>
+                        </Grid> */}
                         {/* <Grid item xs={12} md={6} lg={4}>
                             <MDBox mb={3}>
                                 <ReportsLineChart

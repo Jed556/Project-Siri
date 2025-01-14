@@ -34,7 +34,7 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import PurchaseOrder from "layouts/purchase-order";
 import BudgetRequest from "layouts/budget-request";
-import Notifications from "layouts/notifications";
+// import Notifications from "layouts/notifications";
 import SiteVisitForm from "layouts/site-visit";
 import Dashboard from "layouts/dashboard";
 import Billing from "layouts/billing";

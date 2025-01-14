@@ -1,5 +1,5 @@
 // React components
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -27,32 +27,94 @@ function BudgetRequest() {
     const { sidenavColor } = controller;
 
     const [rows, setRows] = useState([{}]);
+    const [data, setData] = useState([]);
 
     const addNewRow = () => {
         setRows([...rows, {}]);
     };
 
     const columns = [
-        { Header: "Category", accessor: "category" },
-        { Header: "Mon", accessor: "mon" },
-        { Header: "Tue", accessor: "tue" },
-        { Header: "Wed", accessor: "wed" },
-        { Header: "Thu", accessor: "thu" },
-        { Header: "Fri", accessor: "fri" },
-        { Header: "Sat", accessor: "sat" },
-        { Header: "Sun", accessor: "sun" },
+        { Header: "Category", accessor: "category", placeholder: "Category", type: "text" },
+        { Header: "Mon", accessor: "mon", placeholder: "Mon", type: "text" },
+        { Header: "Tue", accessor: "tue", placeholder: "Tue", type: "text" },
+        { Header: "Wed", accessor: "wed", placeholder: "Wed", type: "text" },
+        { Header: "Thu", accessor: "thu", placeholder: "Thu", type: "text" },
+        { Header: "Fri", accessor: "fri", placeholder: "Fri", type: "text" },
+        { Header: "Sat", accessor: "sat", placeholder: "Sat", type: "text" },
+        { Header: "Sun", accessor: "sun", placeholder: "Sun", type: "text" },
     ];
 
-    const data = rows.map((row, index) => ({
-        category: <MDInput fullWidth />,
-        mon: <MDInput fullWidth />,
-        tue: <MDInput fullWidth />,
-        wed: <MDInput fullWidth />,
-        thu: <MDInput fullWidth />,
-        fri: <MDInput fullWidth />,
-        sat: <MDInput fullWidth />,
-        sun: <MDInput fullWidth />,
-    }));
+    const handleInputChange = (index, field, value) => {
+        const updatedRows = rows.map((row, i) => (i === index ? { ...row, [field]: value } : row));
+        setRows(updatedRows);
+    };
+
+    const createRowInputs = (rows, columns) => {
+        const newData = rows.map((row, index) => {
+            const rowData = {};
+            columns.forEach((column) => {
+                rowData[column.accessor] = (
+                    <MDInput
+                        fullWidth
+                        type={column.type}
+                        placeholder={column.placeholder}
+                        value={row[column.accessor] || ""}
+                        onChange={(e) => handleInputChange(index, column.accessor, e.target.value)}
+                    />
+                );
+            });
+            return rowData;
+        });
+        setData(newData);
+    };
+
+    useEffect(() => {
+        createRowInputs(rows, columns);
+    }, [rows]);
+
+    function formatTableData() {
+        return {
+            spreadsheetTitle: "Budget_Request",
+            sheetName: "Budget_Request",
+            fileName: `Budget_Request_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Budget Request",
+            rows: [
+                ["Category", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                ...rows.map((row) => [
+                    row.category || "",
+                    row.mon || "",
+                    row.tue || "",
+                    row.wed || "",
+                    row.thu || "",
+                    row.fri || "",
+                    row.sat || "",
+                    row.sun || "",
+                ]),
+            ],
+        };
+    }
+
+    const handleSheetChange = (spreadsheetId, sheetName) => {
+        if (spreadsheetId) {
+            // Load the sheet data using the currentSpreadsheetId
+            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
+                const values = response.values || [];
+                const updatedRows = values.slice(1).map((row) => ({
+                    category: row[0] || "",
+                    mon: row[1] || "",
+                    tue: row[2] || "",
+                    wed: row[3] || "",
+                    thu: row[4] || "",
+                    fri: row[5] || "",
+                    sat: row[6] || "",
+                    sun: row[7] || "",
+                }));
+
+                setRows(updatedRows);
+            });
+        }
+    };
+    handleSheetChange();
 
     return (
         <DashboardLayout>
@@ -89,7 +151,10 @@ function BudgetRequest() {
                                     Add New Row
                                 </MDButton>
                             </MDBox>
-                            <SheetActionButtons sheetId="" />
+                            <SheetActionButtons
+                                data={formatTableData()}
+                                onSheetChange={handleSheetChange}
+                            />
                         </Card>
                     </Grid>
                 </Grid>
