@@ -149,7 +149,7 @@ function Dashboard() {
                     </Grid>
                 </MDBox> */}
             </MDBox>
-            <Footer company="" />
+            <Footer company={configs.footer.company} />
         </DashboardLayout>
     );
 }

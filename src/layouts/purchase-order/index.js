@@ -199,7 +199,7 @@ function PurchaseOrder() {
                     </Grid>
                 </Grid>
             </MDBox>
-            <Footer company="" />
+            <Footer company={configs.footer.company} />
 
             <MDSnackbar
                 color={snackbar.color}

@@ -81,7 +81,7 @@ function Tables() {
                     </Grid>
                 </Grid>
             </MDBox>
-            <Footer company="" />
+            <Footer company={configs.footer.company} />
         </DashboardLayout>
     );
 }
