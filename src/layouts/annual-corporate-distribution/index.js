@@ -1,5 +1,5 @@
 // React components
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
@@ -21,42 +21,133 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
+import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+
+const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
 function AnnualCorporateDistributionList() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
 
     const [rows, setRows] = useState([{}]);
+    const [data, setData] = useState([]);
+    const [formDetails, setFormDetails] = useState({
+        totalInitialRequest: "",
+        contingency: "",
+        overallTotal: "",
+    });
 
     const addNewRow = () => {
         setRows([...rows, {}]);
     };
 
     const columns = [
-        { Header: "No.", accessor: "no" },
-        { Header: "Company", accessor: "company" },
-        { Header: "Recipient / Name", accessor: "recipient" },
-        { Header: "Designation", accessor: "designation" },
-        { Header: "Category 1 (Type A)", accessor: "category1TypeA" },
-        { Header: "Category 1 (Type B)", accessor: "category1TypeB" },
-        { Header: "Category 1 (Type C)", accessor: "category1TypeC" },
-        { Header: "Category 2 (Type A)", accessor: "category2TypeA" },
-        { Header: "Category 2 (Type B)", accessor: "category2TypeB" },
-        { Header: "Category 2 (Type C)", accessor: "category2TypeC" },
+        { Header: "No.", accessor: "no", placeholder: "No.", type: "text" },
+        { Header: "Company", accessor: "company", placeholder: "Company", type: "text" },
+        { Header: "Recipient / Name", accessor: "recipient", placeholder: "Recipient / Name", type: "text" },
+        { Header: "Designation", accessor: "designation", placeholder: "Designation", type: "text" },
+        { Header: "Category 1 (Type A)", accessor: "category1TypeA", placeholder: "Category 1 (Type A)", type: "text" },
+        { Header: "Category 1 (Type B)", accessor: "category1TypeB", placeholder: "Category 1 (Type B)", type: "text" },
+        { Header: "Category 1 (Type C)", accessor: "category1TypeC", placeholder: "Category 1 (Type C)", type: "text" },
+        { Header: "Category 2 (Type A)", accessor: "category2TypeA", placeholder: "Category 2 (Type A)", type: "text" },
+        { Header: "Category 2 (Type B)", accessor: "category2TypeB", placeholder: "Category 2 (Type B)", type: "text" },
+        { Header: "Category 2 (Type C)", accessor: "category2TypeC", placeholder: "Category 2 (Type C)", type: "text" },
     ];
 
-    const data = rows.map((row, index) => ({
-        no: <MDInput fullWidth placeholder={`No. ${index + 1}`} />,
-        company: <MDInput fullWidth placeholder="Company" />,
-        recipient: <MDInput fullWidth placeholder="Recipient / Name" />,
-        designation: <MDInput fullWidth placeholder="Designation" />,
-        category1TypeA: <MDInput fullWidth placeholder="Category 1 (Type A)" />,
-        category1TypeB: <MDInput fullWidth placeholder="Category 1 (Type B)" />,
-        category1TypeC: <MDInput fullWidth placeholder="Category 1 (Type C)" />,
-        category2TypeA: <MDInput fullWidth placeholder="Category 2 (Type A)" />,
-        category2TypeB: <MDInput fullWidth placeholder="Category 2 (Type B)" />,
-        category2TypeC: <MDInput fullWidth placeholder="Category 2 (Type C)" />,
-    }));
+    const handleInputChange = (index, field, value) => {
+        const updatedRows = rows.map((row, i) => (i === index ? { ...row, [field]: value } : row));
+        setRows(updatedRows);
+    };
+
+    const handleFormDetailsChange = (field, value) => {
+        setFormDetails((prevState) => ({
+            ...prevState,
+            [field]: value,
+        }));
+    };
+
+    const createRowInputs = (rows, columns) => {
+        const newData = rows.map((row, index) => {
+            const rowData = {};
+            columns.forEach((column) => {
+                rowData[column.accessor] = (
+                    <MDInput
+                        fullWidth
+                        type={column.type}
+                        placeholder={column.placeholder}
+                        value={row[column.accessor] || ""}
+                        onChange={(e) => handleInputChange(index, column.accessor, e.target.value)}
+                    />
+                );
+            });
+            return rowData;
+        });
+        setData(newData);
+    };
+
+    useEffect(() => {
+        createRowInputs(rows, columns);
+    }, [rows]);
+
+    function formatTableData() {
+        return {
+            spreadsheetTitle: "Annual_Corporate_Distribution_List",
+            sheetName: "Annual_Corporate_Distribution_List",
+            fileName: `Annual_Corporate_Distribution_List_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Annual Corporate Distribution List",
+            rows: [
+                ["ANNUAL CORPORATE DISTRIBUTION LIST"],
+                ["No.", "Company", "Recipient / Name", "Designation", "Category 1 (Type A)", "Category 1 (Type B)", "Category 1 (Type C)", "Category 2 (Type A)", "Category 2 (Type B)", "Category 2 (Type C)"],
+                ...rows.map((row) => [
+                    row.no || "",
+                    row.company || "",
+                    row.recipient || "",
+                    row.designation || "",
+                    row.category1TypeA || "",
+                    row.category1TypeB || "",
+                    row.category1TypeC || "",
+                    row.category2TypeA || "",
+                    row.category2TypeB || "",
+                    row.category2TypeC || "",
+                ]),
+                ["Total Initial Request (AE Name)", formDetails.totalInitialRequest],
+                ["Add: Contingency", formDetails.contingency],
+                ["Overall Total", formDetails.overallTotal],
+            ],
+        };
+    }
+
+    const handleSheetChange = (spreadsheetId, sheetName) => {
+        if (spreadsheetId) {
+            // Load the sheet data using the currentSpreadsheetId
+            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
+                const values = response.values || [];
+                const updatedRows = values.slice(1, values.length - 3).map((row) => ({
+                    no: row[0] || "",
+                    company: row[1] || "",
+                    recipient: row[2] || "",
+                    designation: row[3] || "",
+                    category1TypeA: row[4] || "",
+                    category1TypeB: row[5] || "",
+                    category1TypeC: row[6] || "",
+                    category2TypeA: row[7] || "",
+                    category2TypeB: row[8] || "",
+                    category2TypeC: row[9] || "",
+                }));
+
+                setRows(updatedRows);
+                setFormDetails({
+                    totalInitialRequest: values[values.length - 3][1] || "",
+                    contingency: values[values.length - 2][1] || "",
+                    overallTotal: values[values.length - 1][1] || "",
+                });
+            });
+        }
+    };
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
 
     return (
         <DashboardLayout>
@@ -105,17 +196,32 @@ function AnnualCorporateDistributionList() {
                                         <MDInput
                                             fullWidth
                                             label="Total Initial Request (AE Name)"
+                                            value={formDetails.totalInitialRequest}
+                                            onChange={(e) => handleFormDetailsChange("totalInitialRequest", e.target.value)}
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
-                                        <MDInput fullWidth label="Add: Contingency" />
+                                        <MDInput
+                                            fullWidth
+                                            label="Add: Contingency"
+                                            value={formDetails.contingency}
+                                            onChange={(e) => handleFormDetailsChange("contingency", e.target.value)}
+                                        />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
-                                        <MDInput fullWidth label="Overall Total" />
+                                        <MDInput
+                                            fullWidth
+                                            label="Overall Total"
+                                            value={formDetails.overallTotal}
+                                            onChange={(e) => handleFormDetailsChange("overallTotal", e.target.value)}
+                                        />
                                     </Grid>
                                 </Grid>
                             </MDBox>
-                            <SheetActionButtons sheetId="" />
+                            <SheetActionButtons
+                                data={formatTableData()}
+                                onSheetChange={handleSheetChange}
+                            />
                         </Card>
                     </Grid>
                 </Grid>

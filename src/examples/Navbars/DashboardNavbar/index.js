@@ -12,9 +12,13 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Avatar from "@mui/material/Avatar";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
 
 // Material Dashboard 2 React example components
@@ -41,8 +45,13 @@ import {
 function DashboardNavbar({ absolute, light, isMini }) {
     const [navbarType, setNavbarType] = useState();
     const [controller, dispatch] = useMaterialUIController();
-    const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
+    const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode, sidenavColor } = controller;
     const [openMenu, setOpenMenu] = useState(false);
+    const [openProfileCard, setOpenProfileCard] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [username, setUsername] = useState("johndoe");
+    const [firstName, setFirstName] = useState("John");
+    const [lastName, setLastName] = useState("Doe");
     const route = useLocation().pathname.split("/").slice(1);
 
     useEffect(() => {
@@ -71,10 +80,24 @@ function DashboardNavbar({ absolute, light, isMini }) {
         return () => window.removeEventListener("scroll", handleTransparentNavbar);
     }, [dispatch, fixedNavbar]);
 
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (user) {
+            setUsername(user[0]);
+            setFirstName(user[2]);
+            setLastName(user[3]);
+        }
+    }, []);
+
     const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
     const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
     const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
     const handleCloseMenu = () => setOpenMenu(false);
+    const handleProfileCardToggle = () => setOpenProfileCard(!openProfileCard);
+    const handleEditModeToggle = () => setEditMode(!editMode);
+    const handleUsernameChange = (event) => setUsername(event.target.value);
+    const handleFirstNameChange = (event) => setFirstName(event.target.value);
+    const handleLastNameChange = (event) => setLastName(event.target.value);
 
     // Render the notifications menu
     // const renderMenu = () => (
@@ -138,11 +161,88 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                     <Icon sx={iconsStyle}>account_circle</Icon>
                                 </IconButton>
                             </Link> */}
-                            <Link to="/authentication/sign-in">
-                                <IconButton sx={navbarIconButton} size="small" disableRipple>
-                                    <Icon sx={iconsStyle}>account_circle</Icon>
-                                </IconButton>
-                            </Link>
+                            <IconButton
+                                sx={navbarIconButton}
+                                size="small"
+                                disableRipple
+                                onClick={handleProfileCardToggle}
+                            >
+                                <Icon sx={iconsStyle}>account_circle</Icon>
+                            </IconButton>
+                            {openProfileCard && (
+                                <Card
+                                    sx={{
+                                        position: "absolute",
+                                        top: "50px",
+                                        right: "10px",
+                                        zIndex: 10,
+                                        p: 2,
+                                        width: "300px",
+                                    }}
+                                >
+                                    <CardContent>
+                                        <MDBox
+                                            display="flex"
+                                            flexDirection="column"
+                                            alignItems="center"
+                                            mb={2}
+                                        >
+                                            <Avatar
+                                                alt="Profile Photo"
+                                                src="/static/images/avatar/1.jpg"
+                                                sx={{ width: 100, height: 100 }}
+                                            />
+                                        </MDBox>
+                                        <MDInput
+                                            label="Username"
+                                            value={username}
+                                            onChange={handleUsernameChange}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={!editMode}
+                                        />
+                                        <MDInput
+                                            label="First Name"
+                                            value={firstName}
+                                            onChange={handleFirstNameChange}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={!editMode}
+                                        />
+                                        <MDInput
+                                            label="Last Name"
+                                            value={lastName}
+                                            onChange={handleLastNameChange}
+                                            fullWidth
+                                            margin="normal"
+                                            disabled={!editMode}
+                                        />
+                                        {editMode ? (
+                                            <MDButton
+                                                variant="contained"
+                                                color={sidenavColor}
+                                                fullWidth
+                                                sx={{ mb: 1 }}
+                                            >
+                                                Save
+                                            </MDButton>
+                                        ) : (
+                                            <MDButton
+                                                variant="contained"
+                                                color={sidenavColor}
+                                                fullWidth
+                                                sx={{ mb: 1 }}
+                                                onClick={handleEditModeToggle}
+                                            >
+                                                Edit
+                                            </MDButton>
+                                        )}
+                                        <MDButton variant="outlined" color="secondary" fullWidth>
+                                            Logout
+                                        </MDButton>
+                                    </CardContent>
+                                </Card>
+                            )}
                             <IconButton
                                 size="small"
                                 disableRipple
@@ -172,7 +272,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 aria-haspopup="true"
                 variant="contained"
                 onClick={handleOpenMenu}
-              >
+              ></IconButton>
                 <Icon sx={iconsStyle}>notifications</Icon>
               </IconButton>
               {renderMenu()} */}
