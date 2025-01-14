@@ -31,6 +31,7 @@ function Dashboard() {
     const { sidenavColor } = controller;
 
     const { sales, tasks } = reportsLineChartData;
+    const user = localStorage.getItem("user");
     //console.log(configs.footer.company);
 
     return (
@@ -152,14 +153,16 @@ function Dashboard() {
                         </Grid>
                         <Grid item xs={12} md={4}>
                             <MDBox mb={3}>
-                            <ComplexStatisticsCard
-                                icon="person"
-                                title="Welcome"
-                                count="User"
-                                percentage={{
-                                    color: "success",
-     }}
-                            />
+                                <ComplexStatisticsCard
+                                    icon="person"
+                                    title="Welcome"
+                                    count={user ? JSON.parse(user)[0] : "User"}
+                                    percentage={{
+                                        color: "success",
+                                        amount: "",
+                                        label: new Date().toLocaleString(),
+                                    }}
+                                />
                             </MDBox>
                             <MDBox mb={3}>
                                 <img
