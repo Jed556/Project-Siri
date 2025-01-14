@@ -44,14 +44,54 @@ function AnnualCorporateDistributionList() {
     const columns = [
         { Header: "No.", accessor: "no", placeholder: "No.", type: "text" },
         { Header: "Company", accessor: "company", placeholder: "Company", type: "text" },
-        { Header: "Recipient / Name", accessor: "recipient", placeholder: "Recipient / Name", type: "text" },
-        { Header: "Designation", accessor: "designation", placeholder: "Designation", type: "text" },
-        { Header: "Category 1 (Type A)", accessor: "category1TypeA", placeholder: "Category 1 (Type A)", type: "text" },
-        { Header: "Category 1 (Type B)", accessor: "category1TypeB", placeholder: "Category 1 (Type B)", type: "text" },
-        { Header: "Category 1 (Type C)", accessor: "category1TypeC", placeholder: "Category 1 (Type C)", type: "text" },
-        { Header: "Category 2 (Type A)", accessor: "category2TypeA", placeholder: "Category 2 (Type A)", type: "text" },
-        { Header: "Category 2 (Type B)", accessor: "category2TypeB", placeholder: "Category 2 (Type B)", type: "text" },
-        { Header: "Category 2 (Type C)", accessor: "category2TypeC", placeholder: "Category 2 (Type C)", type: "text" },
+        {
+            Header: "Recipient / Name",
+            accessor: "recipient",
+            placeholder: "Recipient / Name",
+            type: "text",
+        },
+        {
+            Header: "Designation",
+            accessor: "designation",
+            placeholder: "Designation",
+            type: "text",
+        },
+        {
+            Header: "Category 1 (Type A)",
+            accessor: "category1TypeA",
+            placeholder: "Category 1 (Type A)",
+            type: "text",
+        },
+        {
+            Header: "Category 1 (Type B)",
+            accessor: "category1TypeB",
+            placeholder: "Category 1 (Type B)",
+            type: "text",
+        },
+        {
+            Header: "Category 1 (Type C)",
+            accessor: "category1TypeC",
+            placeholder: "Category 1 (Type C)",
+            type: "text",
+        },
+        {
+            Header: "Category 2 (Type A)",
+            accessor: "category2TypeA",
+            placeholder: "Category 2 (Type A)",
+            type: "text",
+        },
+        {
+            Header: "Category 2 (Type B)",
+            accessor: "category2TypeB",
+            placeholder: "Category 2 (Type B)",
+            type: "text",
+        },
+        {
+            Header: "Category 2 (Type C)",
+            accessor: "category2TypeC",
+            placeholder: "Category 2 (Type C)",
+            type: "text",
+        },
     ];
 
     const handleInputChange = (index, field, value) => {
@@ -93,11 +133,24 @@ function AnnualCorporateDistributionList() {
         return {
             spreadsheetTitle: "Annual_Corporate_Distribution_List",
             sheetName: "Annual_Corporate_Distribution_List",
-            fileName: `Annual_Corporate_Distribution_List_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            fileName: `Annual_Corporate_Distribution_List_${new Date()
+                .toISOString()
+                .replace(/[:.]/g, "-")}`,
             type: "Annual Corporate Distribution List",
             rows: [
                 ["ANNUAL CORPORATE DISTRIBUTION LIST"],
-                ["No.", "Company", "Recipient / Name", "Designation", "Category 1 (Type A)", "Category 1 (Type B)", "Category 1 (Type C)", "Category 2 (Type A)", "Category 2 (Type B)", "Category 2 (Type C)"],
+                [
+                    "No.",
+                    "Company",
+                    "Recipient / Name",
+                    "Designation",
+                    "Category 1 (Type A)",
+                    "Category 1 (Type B)",
+                    "Category 1 (Type C)",
+                    "Category 2 (Type A)",
+                    "Category 2 (Type B)",
+                    "Category 2 (Type C)",
+                ],
                 ...rows.map((row) => [
                     row.no || "",
                     row.company || "",
@@ -197,7 +250,12 @@ function AnnualCorporateDistributionList() {
                                             fullWidth
                                             label="Total Initial Request (AE Name)"
                                             value={formDetails.totalInitialRequest}
-                                            onChange={(e) => handleFormDetailsChange("totalInitialRequest", e.target.value)}
+                                            onChange={(e) =>
+                                                handleFormDetailsChange(
+                                                    "totalInitialRequest",
+                                                    e.target.value
+                                                )
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -205,7 +263,12 @@ function AnnualCorporateDistributionList() {
                                             fullWidth
                                             label="Add: Contingency"
                                             value={formDetails.contingency}
-                                            onChange={(e) => handleFormDetailsChange("contingency", e.target.value)}
+                                            onChange={(e) =>
+                                                handleFormDetailsChange(
+                                                    "contingency",
+                                                    e.target.value
+                                                )
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -213,7 +276,12 @@ function AnnualCorporateDistributionList() {
                                             fullWidth
                                             label="Overall Total"
                                             value={formDetails.overallTotal}
-                                            onChange={(e) => handleFormDetailsChange("overallTotal", e.target.value)}
+                                            onChange={(e) =>
+                                                handleFormDetailsChange(
+                                                    "overallTotal",
+                                                    e.target.value
+                                                )
+                                            }
                                         />
                                     </Grid>
                                 </Grid>

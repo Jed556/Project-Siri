@@ -54,7 +54,9 @@ function ClientEntertainmentRequest() {
         return {
             spreadsheetTitle: "Client_Entertainment_Request",
             sheetName: "Client_Entertainment_Request",
-            fileName: `Client_Entertainment_Request_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            fileName: `Client_Entertainment_Request_${new Date()
+                .toISOString()
+                .replace(/[:.]/g, "-")}`,
             type: "Client Entertainment Request",
             rows: [
                 ["CLIENT ENTERTAINMENT REQUEST FORM"],
@@ -62,8 +64,18 @@ function ClientEntertainmentRequest() {
                 ["Target Date", formData.targetDate, "ENT Location", formData.entLocation],
                 ["School/Organization", formData.schoolOrganization, "Client/s", formData.clients],
                 ["Designation", formData.designation, "Reason / Remarks", formData.reasonRemarks],
-                ["Target ENT. Item/s", formData.targetEntItems, "Estimated Amount", formData.estimatedAmount],
-                ["Requested By / Date", formData.requestedByDate, "Noted (Finance/Operations)", formData.noted],
+                [
+                    "Target ENT. Item/s",
+                    formData.targetEntItems,
+                    "Estimated Amount",
+                    formData.estimatedAmount,
+                ],
+                [
+                    "Requested By / Date",
+                    formData.requestedByDate,
+                    "Noted (Finance/Operations)",
+                    formData.noted,
+                ],
                 [""],
                 ["Approved (President)", formData.approved],
             ],
@@ -126,7 +138,9 @@ function ClientEntertainmentRequest() {
                                         multiline
                                         rows={3}
                                         value={formData.remarks}
-                                        onChange={(e) => handleInputChange("remarks", e.target.value)}
+                                        onChange={(e) =>
+                                            handleInputChange("remarks", e.target.value)
+                                        }
                                     />
                                 </MDBox>
                                 <Grid container spacing={3}>
@@ -136,7 +150,9 @@ function ClientEntertainmentRequest() {
                                             type="text"
                                             label="Target Date"
                                             value={formData.targetDate}
-                                            onChange={(e) => handleInputChange("targetDate", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("targetDate", e.target.value)
+                                            }
                                             onFocus={(e) => (e.target.type = "date")}
                                             onBlur={(e) => (e.target.type = "text")}
                                         />
@@ -146,7 +162,9 @@ function ClientEntertainmentRequest() {
                                             label="ENT Location"
                                             fullWidth
                                             value={formData.entLocation}
-                                            onChange={(e) => handleInputChange("entLocation", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("entLocation", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -154,7 +172,12 @@ function ClientEntertainmentRequest() {
                                             label="School/Organization"
                                             fullWidth
                                             value={formData.schoolOrganization}
-                                            onChange={(e) => handleInputChange("schoolOrganization", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange(
+                                                    "schoolOrganization",
+                                                    e.target.value
+                                                )
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -162,7 +185,9 @@ function ClientEntertainmentRequest() {
                                             label="Client/s"
                                             fullWidth
                                             value={formData.clients}
-                                            onChange={(e) => handleInputChange("clients", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("clients", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -170,7 +195,9 @@ function ClientEntertainmentRequest() {
                                             label="Designation"
                                             fullWidth
                                             value={formData.designation}
-                                            onChange={(e) => handleInputChange("designation", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("designation", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -178,7 +205,9 @@ function ClientEntertainmentRequest() {
                                             label="Reason / Remarks"
                                             fullWidth
                                             value={formData.reasonRemarks}
-                                            onChange={(e) => handleInputChange("reasonRemarks", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("reasonRemarks", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -186,7 +215,9 @@ function ClientEntertainmentRequest() {
                                             label="Target ENT. Item/s"
                                             fullWidth
                                             value={formData.targetEntItems}
-                                            onChange={(e) => handleInputChange("targetEntItems", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("targetEntItems", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -195,7 +226,9 @@ function ClientEntertainmentRequest() {
                                             label="Estimated Amount"
                                             fullWidth
                                             value={formData.estimatedAmount}
-                                            onChange={(e) => handleInputChange("estimatedAmount", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("estimatedAmount", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -203,7 +236,9 @@ function ClientEntertainmentRequest() {
                                             label="Requested By / Date"
                                             fullWidth
                                             value={formData.requestedByDate}
-                                            onChange={(e) => handleInputChange("requestedByDate", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("requestedByDate", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -211,7 +246,9 @@ function ClientEntertainmentRequest() {
                                             label="Noted (Finance/Operations)"
                                             fullWidth
                                             value={formData.noted}
-                                            onChange={(e) => handleInputChange("noted", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("noted", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
@@ -219,7 +256,9 @@ function ClientEntertainmentRequest() {
                                             label="Approved (President)"
                                             fullWidth
                                             value={formData.approved}
-                                            onChange={(e) => handleInputChange("approved", e.target.value)}
+                                            onChange={(e) =>
+                                                handleInputChange("approved", e.target.value)
+                                            }
                                         />
                                     </Grid>
                                 </Grid>

@@ -45,7 +45,14 @@ import {
 function DashboardNavbar({ absolute, light, isMini }) {
     const [navbarType, setNavbarType] = useState();
     const [controller, dispatch] = useMaterialUIController();
-    const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode, sidenavColor } = controller;
+    const {
+        miniSidenav,
+        transparentNavbar,
+        fixedNavbar,
+        openConfigurator,
+        darkMode,
+        sidenavColor,
+    } = controller;
     const [openMenu, setOpenMenu] = useState(false);
     const [openProfileCard, setOpenProfileCard] = useState(false);
     const [editMode, setEditMode] = useState(false);
