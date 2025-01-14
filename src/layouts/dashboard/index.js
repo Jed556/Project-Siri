@@ -3,6 +3,7 @@ import Grid from "@mui/material/Grid";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import { useMaterialUIController } from "context";
@@ -136,6 +137,38 @@ function Dashboard() {
                                 />
                             </MDBox>
                         </Grid> */}
+                    </Grid>
+                </MDBox>
+                <MDBox mt={4.5}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} md={8}>
+                            <MDBox mb={3}>
+                                <img
+                                    src="https://st2.depositphotos.com/3889193/8014/i/450/depositphotos_80147336-stock-photo-business-teamwork.jpg"
+                                    alt="Dashboard Image 1"
+                                    style={{ width: "100%", borderRadius: "8px" }}
+                                />
+                            </MDBox>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <MDBox mb={3}>
+                            <ComplexStatisticsCard
+                                icon="person"
+                                title="Welcome"
+                                count="User"
+                                percentage={{
+                                    color: "success",
+     }}
+                            />
+                            </MDBox>
+                            <MDBox mb={3}>
+                                <img
+                                    src="https://plus.unsplash.com/premium_photo-1661284828052-ea25d6ea94cd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                    alt="Dashboard Image 3"
+                                    style={{ width: "100%", borderRadius: "8px" }}
+                                />
+                            </MDBox>
+                        </Grid>
                     </Grid>
                 </MDBox>
                 {/* <MDBox>

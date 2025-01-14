@@ -169,7 +169,15 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
                 }
             />
             <List>{renderRoutes}</List>
-            <MDBox p={2} mt="auto">
+            <MDBox px={2} py={1} mt="auto" textAlign="left">
+                <MDTypography
+                    variant="caption"
+                    color={textColor}
+                >
+                    © 2025, DevSol | lcg
+                </MDTypography>
+            </MDBox>
+            {/* <MDBox p={2} mt="auto">
                 <MDButton
                     component="a"
                     // href="https://www.creative-tim.com/product/material-dashboard-pro-react"
@@ -181,7 +189,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
                 >
                     © 2025, DevSol | lcg
                 </MDButton>
-            </MDBox>
+            </MDBox> */}
         </SidenavRoot>
     );
 }
