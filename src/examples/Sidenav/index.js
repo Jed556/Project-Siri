@@ -170,10 +170,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             />
             <List>{renderRoutes}</List>
             <MDBox px={2} py={1} mt="auto" textAlign="left">
-                <MDTypography
-                    variant="caption"
-                    color={textColor}
-                >
+                <MDTypography variant="caption" color={textColor}>
                     © 2025, DevSol | lcg
                 </MDTypography>
             </MDBox>

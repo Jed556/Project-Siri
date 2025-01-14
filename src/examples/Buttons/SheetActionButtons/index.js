@@ -284,9 +284,11 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
                                     ),
                                 () => fetchSpreadsheets(setSpreadsheets, data.type, user[4], true),
                             ],
-                            `Spreadsheet ${selectedSpreadsheet === "new" ? "created" : "updated"
+                            `Spreadsheet ${
+                                selectedSpreadsheet === "new" ? "created" : "updated"
                             } successfully`,
-                            `Failed to ${selectedSpreadsheet === "new" ? "create" : "update"
+                            `Failed to ${
+                                selectedSpreadsheet === "new" ? "create" : "update"
                             } spreadsheet`
                         )
                     }

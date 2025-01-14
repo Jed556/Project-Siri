@@ -137,12 +137,7 @@ function PurchaseOrder() {
                 ]),
                 [""],
                 ["Total Amount (PHP):", calculateTotal(items)],
-                [
-                    "Prepared By",
-                    bottomDetails.preparedBy,
-                    "Approved By",
-                    bottomDetails.approvedBy,
-                ],
+                ["Prepared By", bottomDetails.preparedBy, "Approved By", bottomDetails.approvedBy],
                 [
                     "Received By",
                     bottomDetails.receivedBy,
