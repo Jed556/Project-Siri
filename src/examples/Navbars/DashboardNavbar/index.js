@@ -20,6 +20,7 @@ import Avatar from "@mui/material/Avatar";
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
+import MDSnackbar from "components/MDSnackbar";
 
 // Material Dashboard 2 React example components
 import Breadcrumbs from "examples/Breadcrumbs";
@@ -42,6 +43,9 @@ import {
     setOpenConfigurator,
 } from "context";
 
+import { readFileAsDataURL } from "utils/fileUtils"; // Import utility function to read file as data URL
+import MasterSheetDb from "utils/MasterSheetDb"; // Import MasterSheetDb
+
 function DashboardNavbar({ absolute, light, isMini }) {
     const [navbarType, setNavbarType] = useState();
     const [controller, dispatch] = useMaterialUIController();
@@ -59,7 +63,10 @@ function DashboardNavbar({ absolute, light, isMini }) {
     const [username, setUsername] = useState("johndoe");
     const [firstName, setFirstName] = useState("John");
     const [lastName, setLastName] = useState("Doe");
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [profilePhoto, setProfilePhoto] = useState("/static/images/avatar/1.jpg"); // Default profile photo
     const route = useLocation().pathname.split("/").slice(1);
+    const masterSheetDb = new MasterSheetDb(); // Initialize MasterSheetDb
 
     useEffect(() => {
         // Setting the navbar type
@@ -93,6 +100,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
             setUsername(user[0]);
             setFirstName(user[2]);
             setLastName(user[3]);
+            setProfilePhoto(user[9] || "/static/images/avatar/1.jpg"); // Load profile photo from user data
         }
     }, []);
 
@@ -105,6 +113,50 @@ function DashboardNavbar({ absolute, light, isMini }) {
     const handleUsernameChange = (event) => setUsername(event.target.value);
     const handleFirstNameChange = (event) => setFirstName(event.target.value);
     const handleLastNameChange = (event) => setLastName(event.target.value);
+    const handleSnackbarClose = () => {
+        setSnackbar({ ...snackbar, open: false });
+    };
+
+    const showSnackbar = (message, severity) => {
+        setSnackbar({ open: true, message, severity });
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        showSnackbar("Logged out successfully", "success");
+        setTimeout(() => {
+            window.location.href = "/authentication/sign-in";
+        }, 1500);
+    };
+
+    const handleProfilePhotoChange = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const base64Image = await readFileAsDataURL(file);
+            setProfilePhoto(base64Image);
+            const user = JSON.parse(localStorage.getItem("user"));
+            user[9] = base64Image;
+            localStorage.setItem("user", JSON.stringify(user));
+            showSnackbar("Profile photo updated successfully", "success");
+        }
+    };
+
+    const handleSaveProfile = async () => {
+        try {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const updatedUser = await masterSheetDb.updateUser(user[4], {
+                username,
+                firstName,
+                lastName,
+                profilePhoto,
+            });
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+            showSnackbar("Profile updated successfully", "success");
+            setEditMode(false);
+        } catch (error) {
+            showSnackbar(`Error: ${error.message}`, "error");
+        }
+    };
 
     // Render the notifications menu
     // const renderMenu = () => (
@@ -194,11 +246,24 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                             alignItems="center"
                                             mb={2}
                                         >
-                                            <Avatar
-                                                alt="Profile Photo"
-                                                src="/static/images/avatar/1.jpg"
-                                                sx={{ width: 100, height: 100 }}
+                                            <input
+                                                accept="image/*"
+                                                style={{ display: "none" }}
+                                                id="profile-photo-upload"
+                                                type="file"
+                                                onChange={handleProfilePhotoChange}
                                             />
+                                            <label htmlFor="profile-photo-upload">
+                                                <Avatar
+                                                    alt="Profile Photo"
+                                                    src={profilePhoto}
+                                                    sx={{
+                                                        width: 100,
+                                                        height: 100,
+                                                        cursor: "pointer",
+                                                    }}
+                                                />
+                                            </label>
                                         </MDBox>
                                         <MDInput
                                             label="Username"
@@ -230,6 +295,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                                 color={sidenavColor}
                                                 fullWidth
                                                 sx={{ mb: 1 }}
+                                                onClick={handleSaveProfile} // Call handleSaveProfile on save
                                             >
                                                 Save
                                             </MDButton>
@@ -244,7 +310,12 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                                 Edit
                                             </MDButton>
                                         )}
-                                        <MDButton variant="outlined" color="secondary" fullWidth>
+                                        <MDButton
+                                            variant="outlined"
+                                            color="secondary"
+                                            fullWidth
+                                            onClick={handleLogout}
+                                        >
                                             Logout
                                         </MDButton>
                                     </CardContent>
@@ -287,6 +358,16 @@ function DashboardNavbar({ absolute, light, isMini }) {
                     </MDBox>
                 )}
             </Toolbar>
+            <MDSnackbar
+                color={snackbar.severity}
+                icon="notifications"
+                title={snackbar.severity === "success" ? "Success" : "Error"}
+                content={snackbar.message}
+                open={snackbar.open}
+                onClose={handleSnackbarClose}
+                close={handleSnackbarClose}
+                bgWhite
+            />
         </AppBar>
     );
 }

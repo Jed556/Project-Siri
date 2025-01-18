@@ -164,6 +164,38 @@ class MasterSheetDb {
 
         return newUser;
     }
+
+    async updateUser(email, updatedDetails) {
+        await this.loadSpreadsheets();
+        const usersSpreadsheet = await this.getFilteredSpreadsheets([[1, "Users"]]);
+        const users = await this.spreadsheetService.getSpreadsheetValues(
+            usersSpreadsheet[0][4],
+            "Users"
+        );
+
+        if (users.values) {
+            const userIndex = users.values.findIndex((user) => user[4] === email);
+            if (userIndex !== -1) {
+                const user = users.values[userIndex];
+                user[0] = updatedDetails.username || user[0];
+                user[2] = updatedDetails.firstName || user[2];
+                user[3] = updatedDetails.lastName || user[3];
+                user[9] = updatedDetails.profilePhoto || user[9];
+
+                await this.spreadsheetService.updateSpreadsheetValues(
+                    usersSpreadsheet[0][4],
+                    `Users!A${userIndex + 1}:J${userIndex + 1}`,
+                    [user]
+                );
+
+                return user;
+            } else {
+                throw new Error("User not found");
+            }
+        } else {
+            throw new Error("Failed to load users");
+        }
+    }
 }
 
 export default MasterSheetDb;
