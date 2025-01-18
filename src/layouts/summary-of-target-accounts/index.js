@@ -1,3 +1,6 @@
+// React components
+import React, { useState, useEffect } from "react";
+
 // @mui material components
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
@@ -5,49 +8,127 @@ import Grid from "@mui/material/Grid";
 // Material Dashboard 2 React components
 import { useMaterialUIController } from "context";
 import MDTypography from "components/MDTypography";
+import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
 import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import SheetActionButtons from "examples/Buttons/SheetActionButtons";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
 import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
+import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+
+const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
 function SummaryOfTargetAccounts() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
 
+    const [rows, setRows] = useState([{}]);
+    const [data, setData] = useState([]);
+
+    const addNewRow = () => {
+        setRows([...rows, {}]);
+    };
+
     const columns = [
-        { Header: "AE", accessor: "ae" },
-        { Header: "Address", accessor: "address" },
-        { Header: "Region", accessor: "region" },
-        { Header: "Name of Account", accessor: "name_of_account" },
-        { Header: "Type", accessor: "type" },
-        { Header: "Status", accessor: "status" },
-        { Header: "Program Offering", accessor: "program_offering" },
-        { Header: "Contact Person", accessor: "contact_person" },
-        { Header: "Designation", accessor: "designation" },
-        { Header: "Contact Number", accessor: "contact_number" },
+        { Header: "AE", accessor: "ae", placeholder: "AE", type: "text" },
+        { Header: "Address", accessor: "address", placeholder: "Address", type: "text" },
+        { Header: "Region", accessor: "region", placeholder: "Region", type: "text" },
+        { Header: "Name of Account", accessor: "name_of_account", placeholder: "Name of Account", type: "text" },
+        { Header: "Type", accessor: "type", placeholder: "Type", type: "text" },
+        { Header: "Status", accessor: "status", placeholder: "Status", type: "text" },
+        { Header: "Program Offering", accessor: "program_offering", placeholder: "Program Offering", type: "text" },
+        { Header: "Contact Person", accessor: "contact_person", placeholder: "Contact Person", type: "text" },
+        { Header: "Designation", accessor: "designation", placeholder: "Designation", type: "text" },
+        { Header: "Contact Number", accessor: "contact_number", placeholder: "Contact Number", type: "text" },
     ];
 
-    const rows = [
-        {
-            ae: "",
-            address: "Angeles City",
-            region: "03-Central Luzon",
-            name_of_account: "",
-            type: "Private",
-            status: "Initial Visit",
-            program_offering: "Hospitality and Tourism",
-            contact_person: "",
-            designation: "",
-            contact_number: "",
-        },
-        // Add more rows as needed
-    ];
+    const handleInputChange = (index, field, value) => {
+        const updatedRows = rows.map((row, i) => (i === index ? { ...row, [field]: value } : row));
+        setRows(updatedRows);
+    };
+
+    const createRowInputs = (rows, columns) => {
+        const newData = rows.map((row, index) => {
+            const rowData = {};
+            columns.forEach((column) => {
+                rowData[column.accessor] = (
+                    <MDInput
+                        fullWidth
+                        type={column.type}
+                        placeholder={column.placeholder}
+                        value={row[column.accessor] || ""}
+                        onChange={(e) => handleInputChange(index, column.accessor, e.target.value)}
+                    />
+                );
+            });
+            return rowData;
+        });
+        setData(newData);
+    };
+
+    useEffect(() => {
+        createRowInputs(rows, columns);
+    }, [rows]);
+
+    function formatTableData() {
+        return {
+            spreadsheetTitle: "Summary_of_Target_Accounts",
+            sheetName: "Summary_of_Target_Accounts",
+            fileName: `Summary_of_Target_Accounts_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Summary of Target Accounts",
+            rows: [
+                ["SUMMARY OF TARGET ACCOUNTS"],
+                [""],
+                ["AE", "Address", "Region", "Name of Account", "Type", "Status", "Program Offering", "Contact Person", "Designation", "Contact Number"],
+                ...rows.map((row) => [
+                    row.ae || "",
+                    row.address || "",
+                    row.region || "",
+                    row.name_of_account || "",
+                    row.type || "",
+                    row.status || "",
+                    row.program_offering || "",
+                    row.contact_person || "",
+                    row.designation || "",
+                    row.contact_number || "",
+                ]),
+            ],
+        };
+    }
+
+    const handleSheetChange = (spreadsheetId, sheetName) => {
+        if (spreadsheetId) {
+            // Load the sheet data using the currentSpreadsheetId
+            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
+                const values = response.values || [];
+                const updatedRows = values.slice(3).map((row) => ({
+                    ae: row[0] || "",
+                    address: row[1] || "",
+                    region: row[2] || "",
+                    name_of_account: row[3] || "",
+                    type: row[4] || "",
+                    status: row[5] || "",
+                    program_offering: row[6] || "",
+                    contact_person: row[7] || "",
+                    designation: row[8] || "",
+                    contact_number: row[9] || "",
+                }));
+
+                setRows(updatedRows);
+            });
+        }
+    };
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
 
     return (
         <DashboardLayout>
@@ -70,15 +151,24 @@ function SummaryOfTargetAccounts() {
                                     Summary of Target Accounts
                                 </MDTypography>
                             </MDBox>
-                            <MDBox pt={2} pb={3} px={2}>
+                            <MDBox pt={2} px={2}>
                                 <DataTable
-                                    table={{ columns, rows }}
+                                    table={{ columns, rows: data }}
                                     isSorted={false}
                                     entriesPerPage={false}
                                     showTotalEntries={false}
                                     noEndBorder
                                 />
                             </MDBox>
+                            <MDBox pt={3} px={2} textAlign="left">
+                                <MDButton variant="contained" color="secondary" onClick={addNewRow}>
+                                    Add New Row
+                                </MDButton>
+                            </MDBox>
+                            <SheetActionButtons
+                                data={formatTableData()}
+                                onSheetChange={handleSheetChange}
+                            />
                         </Card>
                     </Grid>
                 </Grid>

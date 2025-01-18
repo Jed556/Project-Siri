@@ -1,3 +1,6 @@
+// React components
+import React, { useState, useEffect } from "react";
+
 // @mui material components
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
@@ -5,79 +8,139 @@ import Grid from "@mui/material/Grid";
 // Material Dashboard 2 React components
 import { useMaterialUIController } from "context";
 import MDTypography from "components/MDTypography";
+import MDButton from "components/MDButton";
+import MDInput from "components/MDInput";
 import MDBox from "components/MDBox";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import SheetActionButtons from "examples/Buttons/SheetActionButtons";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
 import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
+import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+
+const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
 function SummaryOfAccounts() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
 
-    const columns = [
-        { Header: "Account", accessor: "account" },
-        { Header: "SOA No.", accessor: "soa_no" },
-        { Header: "SOA Date", accessor: "soa_date" },
-        { Header: "Training", accessor: "training" },
-        { Header: "Training Date", accessor: "training_date" },
-        { Header: "No. of Pax", accessor: "no_of_pax" },
-        { Header: "Amount Billed", accessor: "amount_billed" },
-        { Header: "Amount Collected", accessor: "amount_collected" },
-        { Header: "Base Fee", accessor: "base_fee" },
-        { Header: "Disc or MU", accessor: "disc_or_mu" },
-        { Header: "AF-R", accessor: "af_r" },
-        { Header: "AF", accessor: "af" },
-        { Header: "Training Fee", accessor: "training_fee" },
-        { Header: "Meals & Accom", accessor: "meals_and_accom" },
-    ];
+    const [rows, setRows] = useState([{}]);
+    const [data, setData] = useState([]);
 
-    const rows = [
-        {
-            account: "Account 1",
-            soa_no: "SOA001",
-            soa_date: "2023-10-01",
-            training: "Training 1",
-            training_date: "2023-10-05",
-            no_of_pax: 10,
-            amount_billed: 1000,
-            amount_collected: 800,
-            base_fee: 500,
-            disc_or_mu: 50,
-            af_r: 100,
-            af: 150,
-            training_fee: 200,
-            meals_and_accom: 100,
-        },
-        {
-            account: "Account 2",
-            soa_no: "SOA002",
-            soa_date: "2023-10-02",
-            training: "Training 2",
-            training_date: "2023-10-06",
-            no_of_pax: 15,
-            amount_billed: 1500,
-            amount_collected: 1200,
-            base_fee: 700,
-            disc_or_mu: 70,
-            af_r: 150,
-            af: 200,
-            training_fee: 250,
-            meals_and_accom: 130,
-        },
-        // Add more rows as needed
+    const addNewRow = () => {
+        setRows([...rows, {}]);
+    };
+
+    const columns = [
+        { Header: "Account", accessor: "account", placeholder: "Account", type: "text" },
+        { Header: "SOA No.", accessor: "soa_no", placeholder: "SOA No.", type: "text" },
+        { Header: "SOA Date", accessor: "soa_date", placeholder: "SOA Date", type: "date" },
+        { Header: "Training", accessor: "training", placeholder: "Training", type: "text" },
+        { Header: "Training Date", accessor: "training_date", placeholder: "Training Date", type: "date" },
+        { Header: "No. of Pax", accessor: "no_of_pax", placeholder: "No. of Pax", type: "number" },
+        { Header: "Amount Billed", accessor: "amount_billed", placeholder: "Amount Billed", type: "number" },
+        { Header: "Amount Collected", accessor: "amount_collected", placeholder: "Amount Collected", type: "number" },
+        { Header: "Base Fee", accessor: "base_fee", placeholder: "Base Fee", type: "number" },
+        { Header: "Disc or MU", accessor: "disc_or_mu", placeholder: "Disc or MU", type: "number" },
+        { Header: "AF-R", accessor: "af_r", placeholder: "AF-R", type: "number" },
+        { Header: "AF", accessor: "af", placeholder: "AF", type: "number" },
+        { Header: "Training Fee", accessor: "training_fee", placeholder: "Training Fee", type: "number" },
+        { Header: "Meals & Accom", accessor: "meals_and_accom", placeholder: "Meals & Accom", type: "number" },
     ];
 
     const handleInputChange = (index, field, value) => {
-        const updatedRows = [...rows];
-        updatedRows[index][field] = value;
+        const updatedRows = rows.map((row, i) => (i === index ? { ...row, [field]: value } : row));
         setRows(updatedRows);
     };
+
+    const createRowInputs = (rows, columns) => {
+        const newData = rows.map((row, index) => {
+            const rowData = {};
+            columns.forEach((column) => {
+                rowData[column.accessor] = (
+                    <MDInput
+                        fullWidth
+                        type={column.type}
+                        placeholder={column.placeholder}
+                        value={row[column.accessor] || ""}
+                        onChange={(e) => handleInputChange(index, column.accessor, e.target.value)}
+                    />
+                );
+            });
+            return rowData;
+        });
+        setData(newData);
+    };
+
+    useEffect(() => {
+        createRowInputs(rows, columns);
+    }, [rows]);
+
+    function formatTableData() {
+        return {
+            spreadsheetTitle: "Summary_of_Accounts",
+            sheetName: "Summary_of_Accounts",
+            fileName: `Summary_of_Accounts_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Summary of Accounts",
+            rows: [
+                ["SUMMARY OF ACCOUNTS"],
+                [""],
+                ["Account", "SOA No.", "SOA Date", "Training", "Training Date", "No. of Pax", "Amount Billed", "Amount Collected", "Base Fee", "Disc or MU", "AF-R", "AF", "Training Fee", "Meals & Accom"],
+                ...rows.map((row) => [
+                    row.account || "",
+                    row.soa_no || "",
+                    row.soa_date || "",
+                    row.training || "",
+                    row.training_date || "",
+                    row.no_of_pax || "",
+                    row.amount_billed || "",
+                    row.amount_collected || "",
+                    row.base_fee || "",
+                    row.disc_or_mu || "",
+                    row.af_r || "",
+                    row.af || "",
+                    row.training_fee || "",
+                    row.meals_and_accom || "",
+                ]),
+            ],
+        };
+    }
+
+    const handleSheetChange = (spreadsheetId, sheetName) => {
+        if (spreadsheetId) {
+            // Load the sheet data using the currentSpreadsheetId
+            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
+                const values = response.values || [];
+                const updatedRows = values.slice(3).map((row) => ({
+                    account: row[0] || "",
+                    soa_no: row[1] || "",
+                    soa_date: row[2] || "",
+                    training: row[3] || "",
+                    training_date: row[4] || "",
+                    no_of_pax: row[5] || "",
+                    amount_billed: row[6] || "",
+                    amount_collected: row[7] || "",
+                    base_fee: row[8] || "",
+                    disc_or_mu: row[9] || "",
+                    af_r: row[10] || "",
+                    af: row[11] || "",
+                    training_fee: row[12] || "",
+                    meals_and_accom: row[13] || "",
+                }));
+
+                setRows(updatedRows);
+            });
+        }
+    };
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
 
     return (
         <DashboardLayout>
@@ -100,21 +163,30 @@ function SummaryOfAccounts() {
                                     Summary of Accounts
                                 </MDTypography>
                             </MDBox>
-                            <MDBox pt={2} pb={3} px={2}>
+                            <MDBox pt={2} px={2}>
                                 <DataTable
-                                    table={{ columns, rows }}
+                                    table={{ columns, rows: data }}
                                     isSorted={false}
                                     entriesPerPage={false}
                                     showTotalEntries={false}
                                     noEndBorder
                                 />
                             </MDBox>
+                            <MDBox pt={3} px={2} textAlign="left">
+                                <MDButton variant="contained" color="secondary" onClick={addNewRow}>
+                                    Add New Row
+                                </MDButton>
+                            </MDBox>
+                            <SheetActionButtons
+                                data={formatTableData()}
+                                onSheetChange={handleSheetChange}
+                            />
                         </Card>
                     </Grid>
                 </Grid>
             </MDBox>
             <Footer company={configs.footer.company} />
-        </DashboardLayout>
+        </DashboardLayout >
     );
 }
 
