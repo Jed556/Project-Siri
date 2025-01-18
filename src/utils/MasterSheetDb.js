@@ -114,7 +114,7 @@ class MasterSheetDb {
         writeFile(workbook, filename);
     }
 
-    async getUser(email, value) {
+    async getUser(email) {
         await this.loadSpreadsheets();
         const usersSpreadsheet = await this.getFilteredSpreadsheets([[1, "Users"]]);
         const users = await this.spreadsheetService.getFilteredRows(
@@ -122,7 +122,13 @@ class MasterSheetDb {
             "Users",
             [[4, email]]
         );
-        return users.length > 0 ? users[0] : null;
+        if (users.length > 0) {
+            const user = users[0];
+            // Merge base64 chunks
+            user[9] = user.slice(9).join("");
+            return user;
+        }
+        return null;
     }
 
     async createUser(username, firstName, lastName, email, preferredColor, password) {
@@ -180,11 +186,18 @@ class MasterSheetDb {
                 user[0] = updatedDetails.username || user[0];
                 user[2] = updatedDetails.firstName || user[2];
                 user[3] = updatedDetails.lastName || user[3];
-                user[9] = updatedDetails.profilePhoto || user[9];
+
+                // Slice base64 string into chunks of 50,000 characters
+                const base64Chunks = updatedDetails.profilePhoto.match(/.{1,50000}/g) || [];
+                user.splice(9, base64Chunks.length, ...base64Chunks);
+
+                // Adjust the range dynamically based on the number of chunks
+                const endColumn = String.fromCharCode(65 + 9 + base64Chunks.length - 1); // 'A' + 9 + chunks - 1
+                const range = `Users!A${userIndex + 1}:${endColumn}${userIndex + 1}`;
 
                 await this.spreadsheetService.updateSpreadsheetValues(
                     usersSpreadsheet[0][4],
-                    `Users!A${userIndex + 1}:J${userIndex + 1}`,
+                    range,
                     [user]
                 );
 

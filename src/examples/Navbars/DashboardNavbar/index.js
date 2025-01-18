@@ -43,8 +43,8 @@ import {
     setOpenConfigurator,
 } from "context";
 
-import { readFileAsDataURL } from "utils/fileUtils"; // Import utility function to read file as data URL
 import MasterSheetDb from "utils/MasterSheetDb"; // Import MasterSheetDb
+import { readFileAsDataURL } from "utils/fileUtils"; // Import utility function to read file as data URL
 
 function DashboardNavbar({ absolute, light, isMini }) {
     const [navbarType, setNavbarType] = useState();
@@ -132,7 +132,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
     const handleProfilePhotoChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const base64Image = await readFileAsDataURL(file);
+            const base64Image = await readFileAsDataURL(file); // Convert file to base64
+            console.log(base64Image);
             setProfilePhoto(base64Image);
             const user = JSON.parse(localStorage.getItem("user"));
             user[9] = base64Image;
@@ -252,6 +253,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                                 id="profile-photo-upload"
                                                 type="file"
                                                 onChange={handleProfilePhotoChange}
+                                                disabled={!editMode} // Disable input when not in edit mode
                                             />
                                             <label htmlFor="profile-photo-upload">
                                                 <Avatar
@@ -260,7 +262,19 @@ function DashboardNavbar({ absolute, light, isMini }) {
                                                     sx={{
                                                         width: 100,
                                                         height: 100,
-                                                        cursor: "pointer",
+                                                        cursor: editMode ? "pointer" : "default",
+                                                        "&:hover": editMode && {
+                                                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                                            "&::after": {
+                                                                content: '"Edit"',
+                                                                position: "absolute",
+                                                                color: "white",
+                                                                fontSize: "0.75rem",
+                                                                top: "50%",
+                                                                left: "50%",
+                                                                transform: "translate(-50%, -50%)",
+                                                            },
+                                                        },
                                                     }}
                                                 />
                                             </label>
