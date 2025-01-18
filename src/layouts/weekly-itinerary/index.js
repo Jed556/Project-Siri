@@ -72,40 +72,43 @@ function WeeklyItinerary() {
             spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
                 const values = response.values || [];
                 setState({
-                    week: values[0] && values[0][1] ? values[0][1] : "",
-                    objectives: values[1] && values[1][1] ? values[1][1] : "",
-                    deadlines: values[2] && values[2][1] ? values[2][1] : "",
+                    week: values[2] && values[2][1] ? values[2][1] : "",
+                    objectives: values[3] && values[3][1] ? values[3][1] : "",
+                    deadlines: values[4] && values[4][1] ? values[4][1] : "",
                     dailyRemarks: {
                         Monday: {
-                            date: values[3] && values[3][1] ? new Date(values[3][1]) : null,
-                            remarks: values[3] && values[3][2] ? values[3][2] : "",
-                        },
-                        Tuesday: {
-                            date: values[4] && values[4][1] ? new Date(values[4][1]) : null,
-                            remarks: values[4] && values[4][2] ? values[4][2] : "",
-                        },
-                        Wednesday: {
                             date: values[5] && values[5][1] ? new Date(values[5][1]) : null,
                             remarks: values[5] && values[5][2] ? values[5][2] : "",
                         },
-                        Thursday: {
+                        Tuesday: {
                             date: values[6] && values[6][1] ? new Date(values[6][1]) : null,
                             remarks: values[6] && values[6][2] ? values[6][2] : "",
                         },
-                        Friday: {
+                        Wednesday: {
                             date: values[7] && values[7][1] ? new Date(values[7][1]) : null,
                             remarks: values[7] && values[7][2] ? values[7][2] : "",
                         },
-                        Saturday: {
+                        Thursday: {
                             date: values[8] && values[8][1] ? new Date(values[8][1]) : null,
                             remarks: values[8] && values[8][2] ? values[8][2] : "",
+                        },
+                        Friday: {
+                            date: values[9] && values[9][1] ? new Date(values[9][1]) : null,
+                            remarks: values[9] && values[9][2] ? values[9][2] : "",
+                        },
+                        Saturday: {
+                            date: values[10] && values[10][1] ? new Date(values[10][1]) : null,
+                            remarks: values[10] && values[10][2] ? values[10][2] : "",
                         },
                     },
                 });
             });
         }
     };
-    handleSheetChange();
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
 
     function formatTableData() {
         return {
@@ -114,6 +117,8 @@ function WeeklyItinerary() {
             fileName: `Weekly_Itinerary_${new Date().toISOString().replace(/[:.]/g, "-")}`,
             type: "Weekly Itinerary",
             rows: [
+                ["WEEKLY ITINERARY"],
+                [""],
                 ["Week Covered", state.week],
                 ["Objectives", state.objectives],
                 ["Deadlines", state.deadlines],

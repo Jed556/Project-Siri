@@ -139,6 +139,7 @@ function AnnualCorporateDistributionList() {
             type: "Annual Corporate Distribution List",
             rows: [
                 ["ANNUAL CORPORATE DISTRIBUTION LIST"],
+                [""],
                 [
                     "No.",
                     "Company",
@@ -175,7 +176,7 @@ function AnnualCorporateDistributionList() {
             // Load the sheet data using the currentSpreadsheetId
             spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
                 const values = response.values || [];
-                const updatedRows = values.slice(1, values.length - 3).map((row) => ({
+                const updatedRows = values.slice(3, values.length - 3).map((row) => ({
                     no: row[0] || "",
                     company: row[1] || "",
                     recipient: row[2] || "",

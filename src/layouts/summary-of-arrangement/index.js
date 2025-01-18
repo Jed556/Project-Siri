@@ -1,5 +1,5 @@
 // React components
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -21,6 +21,9 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
+import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+
+const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
 function SummaryOfArrangement() {
     const [controller] = useMaterialUIController();
@@ -34,24 +37,48 @@ function SummaryOfArrangement() {
 
     function formatTableData() {
         return {
-            name: "Summary_of_Arrangement",
-            rows: rows.map((row) => ({
-                Account: row.account || "",
-                AE: row.ae || "",
-                "Main Contacts": row.mainContacts || "",
-                Designation: row.designation || "",
-                Courses: row.courses || "",
-                "Old Rates": row.oldRates || "",
-                "Fees Breakdown": row.feesBreakdown || "",
-                Discount: row.discount || "",
-                "AF-R": row.afR || "",
-                "Official Rate": row.officialRate || "",
-                "Last Update": row.lastUpdate || "",
-                "Terms (Weeks)": row.terms || "",
-                "Signed Docs - MOA": row.signedDocsMoa || "",
-                "Signed Docs - SP": row.signedDocsSp || "",
-                Remarks: row.remarks || "",
-            })),
+            spreadsheetTitle: "Summary_of_Arrangement",
+            sheetName: "Summary_of_Arrangement",
+            fileName: `Summary_of_Arrangement_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Summary of Arrangement",
+            rows: [
+                ["SUMMARY OF ARRANGEMENTS"],
+                [""],
+                [
+                    "Account",
+                    "AE",
+                    "Main Contacts",
+                    "Designation",
+                    "Courses",
+                    "Old Rates",
+                    "Fees Breakdown",
+                    "Discount",
+                    "AF-R",
+                    "Official Rate",
+                    "Last Update",
+                    "Terms (Weeks)",
+                    "Signed Docs - MOA",
+                    "Signed Docs - SP",
+                    "Remarks",
+                ],
+                ...rows.map((row) => [
+                    row.account || "",
+                    row.ae || "",
+                    row.mainContacts || "",
+                    row.designation || "",
+                    row.courses || "",
+                    row.oldRates || "",
+                    row.feesBreakdown || "",
+                    row.discount || "",
+                    row.afR || "",
+                    row.officialRate || "",
+                    row.lastUpdate || "",
+                    row.terms || "",
+                    row.signedDocsMoa || "",
+                    row.signedDocsSp || "",
+                    row.remarks || "",
+                ]),
+            ],
         };
     }
 
@@ -202,6 +229,38 @@ function SummaryOfArrangement() {
         ),
     }));
 
+    const handleSheetChange = (spreadsheetId, sheetName) => {
+        if (spreadsheetId) {
+            // Load the sheet data using the currentSpreadsheetId
+            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
+                const values = response.values || [];
+                const updatedRows = values.slice(3).map((row) => ({
+                    account: row[0] || "",
+                    ae: row[1] || "",
+                    mainContacts: row[2] || "",
+                    designation: row[3] || "",
+                    courses: row[4] || "",
+                    oldRates: row[5] || "",
+                    feesBreakdown: row[6] || "",
+                    discount: row[7] || "",
+                    afR: row[8] || "",
+                    officialRate: row[9] || "",
+                    lastUpdate: row[10] || "",
+                    terms: row[11] || "",
+                    signedDocsMoa: row[12] || "",
+                    signedDocsSp: row[13] || "",
+                    remarks: row[14] || "",
+                }));
+
+                setRows(updatedRows);
+            });
+        }
+    };
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
+
     return (
         <DashboardLayout>
             <DashboardNavbar />
@@ -237,7 +296,10 @@ function SummaryOfArrangement() {
                                     Add New Row
                                 </MDButton>
                             </MDBox>
-                            <SheetActionButtons data={formatTableData()} />
+                            <SheetActionButtons
+                                data={formatTableData()}
+                                onSheetChange={handleSheetChange}
+                            />
                         </Card>
                     </Grid>
                 </Grid>

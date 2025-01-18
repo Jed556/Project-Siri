@@ -117,6 +117,8 @@ function PurchaseOrder() {
             fileName: `Purchase_Order_${new Date().toISOString().replace(/[:.]/g, "-")}`,
             type: "Purchase Order",
             rows: [
+                ["PURCHASE ORDER"],
+                [""],
                 ["Order Details"],
                 ["P.O. #", orderDetails.poNumber, "Date", orderDetails.date],
                 ["Payment Terms", orderDetails.paymentTerms],
@@ -137,6 +139,7 @@ function PurchaseOrder() {
                 ]),
                 [""],
                 ["Total Amount (PHP):", calculateTotal(items)],
+                [""],
                 ["Prepared By", bottomDetails.preparedBy, "Approved By", bottomDetails.approvedBy],
                 [
                     "Received By",
@@ -154,16 +157,16 @@ function PurchaseOrder() {
             spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
                 const values = response.values || [];
                 const orderDetails = {
-                    poNumber: values[1][1] || "",
-                    date: values[1][3] || "",
-                    paymentTerms: values[2][1] || "",
-                    supplierName: values[3][1] || "",
-                    address: values[4][1] || "",
-                    delivery: values[5][1] || "",
-                    attention: values[6][1] || "",
-                    pickUp: values[6][3] || "",
+                    poNumber: values[3][1] || "",
+                    date: values[3][3] || "",
+                    paymentTerms: values[4][1] || "",
+                    supplierName: values[5][1] || "",
+                    address: values[6][1] || "",
+                    delivery: values[7][1] || "",
+                    attention: values[8][1] || "",
+                    pickUp: values[8][3] || "",
                 };
-                const items = values.slice(8, values.length - 3).map((row) => ({
+                const items = values.slice(11, values.length - 3).map((row) => ({
                     itemNumber: row[0] || "",
                     description: row[1] || "",
                     quantity: row[2] || "",

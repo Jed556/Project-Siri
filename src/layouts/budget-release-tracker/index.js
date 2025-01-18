@@ -21,6 +21,9 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
+import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+
+const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
 function BudgetReleaseTracker() {
     const [controller] = useMaterialUIController();
@@ -80,6 +83,8 @@ function BudgetReleaseTracker() {
             fileName: `Budget_Release_Tracker_${new Date().toISOString().replace(/[:.]/g, "-")}`,
             type: "Budget Release Tracker",
             rows: [
+                ["BUDGET RELEASE TRACKER"],
+                [""],
                 ["When", "Who", "What", "Amount Released"],
                 ...rows.map((row) => [
                     row.when || "",
@@ -96,7 +101,7 @@ function BudgetReleaseTracker() {
             // Load the sheet data using the currentSpreadsheetId
             spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
                 const values = response.values || [];
-                const updatedRows = values.slice(1).map((row) => ({
+                const updatedRows = values.slice(3).map((row) => ({
                     when: row[0] || "",
                     who: row[1] || "",
                     what: row[2] || "",
@@ -107,7 +112,10 @@ function BudgetReleaseTracker() {
             });
         }
     };
-    handleSheetChange();
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
 
     return (
         <DashboardLayout>

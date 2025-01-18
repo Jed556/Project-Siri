@@ -21,6 +21,9 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
+import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
+
+const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
 
 function BudgetRequest() {
     const [controller] = useMaterialUIController();
@@ -79,6 +82,8 @@ function BudgetRequest() {
             fileName: `Budget_Request_${new Date().toISOString().replace(/[:.]/g, "-")}`,
             type: "Budget Request",
             rows: [
+                ["BUDGET REQUEST FORM"],
+                [""],
                 ["Category", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
                 ...rows.map((row) => [
                     row.category || "",
@@ -99,7 +104,7 @@ function BudgetRequest() {
             // Load the sheet data using the currentSpreadsheetId
             spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
                 const values = response.values || [];
-                const updatedRows = values.slice(1).map((row) => ({
+                const updatedRows = values.slice(3).map((row) => ({
                     category: row[0] || "",
                     mon: row[1] || "",
                     tue: row[2] || "",
@@ -114,7 +119,10 @@ function BudgetRequest() {
             });
         }
     };
-    handleSheetChange();
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
 
     return (
         <DashboardLayout>

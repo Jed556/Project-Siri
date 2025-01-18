@@ -98,6 +98,8 @@ function TrainingCommencement() {
             fileName: `Training_Commencement_${new Date().toISOString().replace(/[:.]/g, "-")}`,
             type: "Training Commencement",
             rows: [
+                ["TRAINING COMMENCEMENT FORM"],
+                [""],
                 [
                     "Account",
                     "Training",
@@ -127,7 +129,7 @@ function TrainingCommencement() {
             // Load the sheet data using the currentSpreadsheetId
             spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
                 const values = response.values || [];
-                const updatedRows = values.slice(1).map((row) => ({
+                const updatedRows = values.slice(3).map((row) => ({
                     account: row[0] || "",
                     training: row[1] || "",
                     trainingDate: row[2] || "",
@@ -142,7 +144,10 @@ function TrainingCommencement() {
             });
         }
     };
-    handleSheetChange();
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
 
     return (
         <DashboardLayout>

@@ -90,6 +90,8 @@ function MasterlistOfAccounts() {
             fileName: `Masterlist_Of_Accounts_${new Date().toISOString().replace(/[:.]/g, "-")}`,
             type: "Masterlist Of Accounts",
             rows: [
+                ["MASTERLIST OF ACCOUNTS"],
+                [""],
                 ["Account", "Contact Person", "Position", "Address", "Contact No.", "E-mail"],
                 ...rows.map((row) => [
                     row.account || "",
@@ -108,7 +110,7 @@ function MasterlistOfAccounts() {
             // Load the sheet data using the currentSpreadsheetId
             spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
                 const values = response.values || [];
-                const updatedRows = values.slice(1).map((row) => ({
+                const updatedRows = values.slice(3).map((row) => ({
                     account: row[0] || "",
                     contactPerson: row[1] || "",
                     position: row[2] || "",
@@ -121,7 +123,10 @@ function MasterlistOfAccounts() {
             });
         }
     };
-    handleSheetChange();
+
+    useEffect(() => {
+        handleSheetChange();
+    }, []);
 
     return (
         <DashboardLayout>
