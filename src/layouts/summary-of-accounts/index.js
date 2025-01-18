@@ -41,16 +41,41 @@ function SummaryOfAccounts() {
         { Header: "SOA No.", accessor: "soa_no", placeholder: "SOA No.", type: "text" },
         { Header: "SOA Date", accessor: "soa_date", placeholder: "SOA Date", type: "date" },
         { Header: "Training", accessor: "training", placeholder: "Training", type: "text" },
-        { Header: "Training Date", accessor: "training_date", placeholder: "Training Date", type: "date" },
+        {
+            Header: "Training Date",
+            accessor: "training_date",
+            placeholder: "Training Date",
+            type: "date",
+        },
         { Header: "No. of Pax", accessor: "no_of_pax", placeholder: "No. of Pax", type: "number" },
-        { Header: "Amount Billed", accessor: "amount_billed", placeholder: "Amount Billed", type: "number" },
-        { Header: "Amount Collected", accessor: "amount_collected", placeholder: "Amount Collected", type: "number" },
+        {
+            Header: "Amount Billed",
+            accessor: "amount_billed",
+            placeholder: "Amount Billed",
+            type: "number",
+        },
+        {
+            Header: "Amount Collected",
+            accessor: "amount_collected",
+            placeholder: "Amount Collected",
+            type: "number",
+        },
         { Header: "Base Fee", accessor: "base_fee", placeholder: "Base Fee", type: "number" },
         { Header: "Disc or MU", accessor: "disc_or_mu", placeholder: "Disc or MU", type: "number" },
         { Header: "AF-R", accessor: "af_r", placeholder: "AF-R", type: "number" },
         { Header: "AF", accessor: "af", placeholder: "AF", type: "number" },
-        { Header: "Training Fee", accessor: "training_fee", placeholder: "Training Fee", type: "number" },
-        { Header: "Meals & Accom", accessor: "meals_and_accom", placeholder: "Meals & Accom", type: "number" },
+        {
+            Header: "Training Fee",
+            accessor: "training_fee",
+            placeholder: "Training Fee",
+            type: "number",
+        },
+        {
+            Header: "Meals & Accom",
+            accessor: "meals_and_accom",
+            placeholder: "Meals & Accom",
+            type: "number",
+        },
     ];
 
     const handleInputChange = (index, field, value) => {
@@ -90,7 +115,22 @@ function SummaryOfAccounts() {
             rows: [
                 ["SUMMARY OF ACCOUNTS"],
                 [""],
-                ["Account", "SOA No.", "SOA Date", "Training", "Training Date", "No. of Pax", "Amount Billed", "Amount Collected", "Base Fee", "Disc or MU", "AF-R", "AF", "Training Fee", "Meals & Accom"],
+                [
+                    "Account",
+                    "SOA No.",
+                    "SOA Date",
+                    "Training",
+                    "Training Date",
+                    "No. of Pax",
+                    "Amount Billed",
+                    "Amount Collected",
+                    "Base Fee",
+                    "Disc or MU",
+                    "AF-R",
+                    "AF",
+                    "Training Fee",
+                    "Meals & Accom",
+                ],
                 ...rows.map((row) => [
                     row.account || "",
                     row.soa_no || "",
@@ -186,7 +226,7 @@ function SummaryOfAccounts() {
                 </Grid>
             </MDBox>
             <Footer company={configs.footer.company} />
-        </DashboardLayout >
+        </DashboardLayout>
     );
 }
 

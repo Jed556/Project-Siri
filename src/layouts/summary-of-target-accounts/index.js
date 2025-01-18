@@ -40,13 +40,38 @@ function SummaryOfTargetAccounts() {
         { Header: "AE", accessor: "ae", placeholder: "AE", type: "text" },
         { Header: "Address", accessor: "address", placeholder: "Address", type: "text" },
         { Header: "Region", accessor: "region", placeholder: "Region", type: "text" },
-        { Header: "Name of Account", accessor: "name_of_account", placeholder: "Name of Account", type: "text" },
+        {
+            Header: "Name of Account",
+            accessor: "name_of_account",
+            placeholder: "Name of Account",
+            type: "text",
+        },
         { Header: "Type", accessor: "type", placeholder: "Type", type: "text" },
         { Header: "Status", accessor: "status", placeholder: "Status", type: "text" },
-        { Header: "Program Offering", accessor: "program_offering", placeholder: "Program Offering", type: "text" },
-        { Header: "Contact Person", accessor: "contact_person", placeholder: "Contact Person", type: "text" },
-        { Header: "Designation", accessor: "designation", placeholder: "Designation", type: "text" },
-        { Header: "Contact Number", accessor: "contact_number", placeholder: "Contact Number", type: "text" },
+        {
+            Header: "Program Offering",
+            accessor: "program_offering",
+            placeholder: "Program Offering",
+            type: "text",
+        },
+        {
+            Header: "Contact Person",
+            accessor: "contact_person",
+            placeholder: "Contact Person",
+            type: "text",
+        },
+        {
+            Header: "Designation",
+            accessor: "designation",
+            placeholder: "Designation",
+            type: "text",
+        },
+        {
+            Header: "Contact Number",
+            accessor: "contact_number",
+            placeholder: "Contact Number",
+            type: "text",
+        },
     ];
 
     const handleInputChange = (index, field, value) => {
@@ -81,12 +106,25 @@ function SummaryOfTargetAccounts() {
         return {
             spreadsheetTitle: "Summary_of_Target_Accounts",
             sheetName: "Summary_of_Target_Accounts",
-            fileName: `Summary_of_Target_Accounts_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            fileName: `Summary_of_Target_Accounts_${new Date()
+                .toISOString()
+                .replace(/[:.]/g, "-")}`,
             type: "Summary of Target Accounts",
             rows: [
                 ["SUMMARY OF TARGET ACCOUNTS"],
                 [""],
-                ["AE", "Address", "Region", "Name of Account", "Type", "Status", "Program Offering", "Contact Person", "Designation", "Contact Number"],
+                [
+                    "AE",
+                    "Address",
+                    "Region",
+                    "Name of Account",
+                    "Type",
+                    "Status",
+                    "Program Offering",
+                    "Contact Person",
+                    "Designation",
+                    "Contact Number",
+                ],
                 ...rows.map((row) => [
                     row.ae || "",
                     row.address || "",
