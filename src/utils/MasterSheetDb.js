@@ -124,8 +124,8 @@ class MasterSheetDb {
         );
         if (users.length > 0) {
             const user = users[0];
-            // Merge base64 chunks
-            user[9] = user.slice(9).join("");
+            // Merge and decode base64 chunks
+            user[9] = decodeURIComponent(user.slice(9).join(""));
             return user;
         }
         return null;
@@ -187,8 +187,9 @@ class MasterSheetDb {
                 user[2] = updatedDetails.firstName || user[2];
                 user[3] = updatedDetails.lastName || user[3];
 
-                // Slice base64 string into chunks of 50,000 characters
-                const base64Chunks = updatedDetails.profilePhoto.match(/.{1,50000}/g) || [];
+                // Encode and slice base64 string into chunks of 50,000 characters
+                const base64Chunks =
+                    encodeURIComponent(updatedDetails.profilePhoto).match(/.{1,50000}/g) || [];
                 user.splice(9, base64Chunks.length, ...base64Chunks);
 
                 // Adjust the range dynamically based on the number of chunks
