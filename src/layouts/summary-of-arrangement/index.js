@@ -1,5 +1,8 @@
 // React components
 import React, { useState, useEffect } from "react";
+import { format, isValid, parse } from "date-fns";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -11,6 +14,7 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import MDInput from "components/MDInput";
 import MDBox from "components/MDBox";
+import { useTheme } from "@mui/material/styles";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -28,6 +32,7 @@ function SummaryOfArrangement() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
     const { user } = useAuth();
+    const theme = useTheme();
 
     const [rows, setRows] = useState([{}]);
 
@@ -105,6 +110,75 @@ function SummaryOfArrangement() {
         const updatedRows = [...rows];
         updatedRows[index][field] = value;
         setRows(updatedRows);
+    };
+
+    const parseDateValue = (value) => {
+        if (!value) return null;
+        if (value instanceof Date && isValid(value)) return value;
+
+        const parsedFromFormat = parse(value, "MM/dd/yyyy", new Date());
+        if (isValid(parsedFromFormat)) return parsedFromFormat;
+
+        const parsedNative = new Date(value);
+        return isValid(parsedNative) ? parsedNative : null;
+    };
+
+    const formatDateValue = (value) => {
+        if (!value) return "";
+        if (value instanceof Date && isValid(value)) return format(value, "MM/dd/yyyy");
+        return value;
+    };
+
+    const datePickerSlotProps = {
+        popper: {
+            sx: {
+                "& .MuiPickersDay-root": {
+                    color: `${theme.palette.text.primary} !important`,
+                },
+            },
+        },
+        day: {
+            sx: {
+                color: `${theme.palette.text.primary} !important`,
+                "&.Mui-disabled": {
+                    opacity: 0.35,
+                    color: `${theme.palette.text.disabled} !important`,
+                },
+                "&.Mui-focusVisible:not(.Mui-selected)": {
+                    backgroundColor: "transparent !important",
+                    boxShadow: "none !important",
+                },
+                "&.Mui-selected": {
+                    backgroundColor: `${theme.palette.info.main} !important`,
+                    color: `${theme.palette.common.white} !important`,
+                },
+                "&.Mui-selected:hover": {
+                    backgroundColor: `${theme.palette.info.main} !important`,
+                },
+                "&.MuiPickersDay-today:not(.Mui-selected)": {
+                    backgroundColor: "transparent !important",
+                    border: `1px solid ${theme.palette.info.main} !important`,
+                },
+                "&.MuiPickersDay-today.Mui-selected": {
+                    border: `1px solid ${theme.palette.common.white} !important`,
+                },
+            },
+        },
+        textField: {
+            placeholder: "MM/DD/YYYY",
+            sx: {
+                maxWidth: "180px",
+                "& input": {
+                    color: `${theme.palette.text.primary} !important`,
+                },
+                "& .MuiSvgIcon-root": {
+                    color: `${theme.palette.text.primary} !important`,
+                },
+                "& .MuiInputAdornment-root .MuiIconButton-root": {
+                    color: `${theme.palette.text.primary} !important`,
+                },
+            },
+        },
     };
 
     const data = rows.map((row, index) => ({
@@ -189,11 +263,11 @@ function SummaryOfArrangement() {
             />
         ),
         lastUpdate: (
-            <MDInput
-                fullWidth
-                type="date"
-                value={row.lastUpdate || ""}
-                onChange={(e) => handleInputChange(index, "lastUpdate", e.target.value)}
+            <DatePicker
+                value={parseDateValue(row.lastUpdate)}
+                onChange={(date) => handleInputChange(index, "lastUpdate", formatDateValue(date))}
+                format="MM/dd/yyyy"
+                slotProps={datePickerSlotProps}
             />
         ),
         terms: (
@@ -231,7 +305,10 @@ function SummaryOfArrangement() {
     }));
 
     const handleSheetChange = async (docId) => {
-        if (!docId || docId === "new") return;
+        if (!docId || docId === "new") {
+            setRows([{}]);
+            return;
+        }
         try {
             const docData = await getFormDocument(user.uid, "Summary of Arrangement", docId);
             if (docData && docData.formData) {
@@ -264,13 +341,15 @@ function SummaryOfArrangement() {
                                 </MDTypography>
                             </MDBox>
                             <MDBox pt={2} px={2}>
-                                <DataTable
-                                    table={{ columns, rows: data }}
-                                    isSorted={false}
-                                    entriesPerPage={false}
-                                    showTotalEntries={false}
-                                    noEndBorder
-                                />
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DataTable
+                                        table={{ columns, rows: data }}
+                                        isSorted={false}
+                                        entriesPerPage={false}
+                                        showTotalEntries={false}
+                                        noEndBorder
+                                    />
+                                </LocalizationProvider>
                             </MDBox>
                             <MDBox pt={3} px={2} textAlign="left">
                                 <MDButton variant="contained" color="secondary" onClick={addNewRow}>

@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import MDBox from "components/MDBox";
 import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
+import MDConfirmDialog from "components/MDConfirmDialog";
 import { useMaterialUIController } from "context";
 
 import { utils, writeFile } from "xlsx";
@@ -64,12 +65,92 @@ function handlePrint(data) {
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const html = utils.sheet_to_html(worksheet);
 
-    const printWindow = window.open("", "_blank");
-    printWindow.document.open();
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+    const styledHtml = `
+        <!doctype html>
+        <html>
+            <head>
+                <meta charset="utf-8" />
+                <title>${data.spreadsheetTitle || data.sheetName || "Print"}</title>
+                <style>
+                    @page {
+                        size: landscape;
+                        margin: 12mm;
+                    }
+
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        font-family: Arial, Helvetica, sans-serif;
+                        color: #111;
+                    }
+
+                    table {
+                        border-collapse: collapse;
+                        width: 100%;
+                        table-layout: auto;
+                        font-size: 11px;
+                    }
+
+                    th,
+                    td {
+                        border: 1px solid #333;
+                        padding: 6px 8px;
+                        vertical-align: top;
+                        text-align: left;
+                        white-space: nowrap;
+                    }
+
+                    tr:first-child td {
+                        font-size: 16px;
+                        font-weight: 700;
+                    }
+
+                    @media print {
+                        body {
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                ${html}
+            </body>
+        </html>
+    `;
+
+    const printFrame = document.createElement("iframe");
+    printFrame.style.position = "fixed";
+    printFrame.style.right = "0";
+    printFrame.style.bottom = "0";
+    printFrame.style.width = "0";
+    printFrame.style.height = "0";
+    printFrame.style.border = "0";
+    printFrame.setAttribute("aria-hidden", "true");
+
+    document.body.appendChild(printFrame);
+
+    const frameDoc = printFrame.contentWindow?.document;
+    if (!frameDoc) {
+        document.body.removeChild(printFrame);
+        throw new Error("Unable to initialize print frame.");
+    }
+
+    frameDoc.open();
+    frameDoc.write(styledHtml);
+    frameDoc.close();
+
+    const runPrint = () => {
+        printFrame.contentWindow?.focus();
+        printFrame.contentWindow?.print();
+        setTimeout(() => {
+            if (document.body.contains(printFrame)) {
+                document.body.removeChild(printFrame);
+            }
+        }, 500);
+    };
+
+    printFrame.onload = runPrint;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -82,6 +163,7 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
     const [selectedDoc, setSelectedDoc] = useState("new");
     const [documents, setDocuments] = useState([]);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     // ── Fetch saved documents from Firestore ─────────────────────────────
     const refreshDocuments = useCallback(async () => {
@@ -103,7 +185,7 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
     const handleDocChange = async (event) => {
         const docId = event.target.value;
         setSelectedDoc(docId);
-        if (docId !== "new" && onSheetChange) {
+        if (onSheetChange) {
             onSheetChange(docId);
         }
     };
@@ -147,9 +229,27 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
     // ── Delete (trash) ───────────────────────────────────────────────────
     const handleDelete = async () => {
         if (selectedDoc === "new") return;
+
         await trashFormDocument(user.uid, data.type, selectedDoc);
         setSelectedDoc("new");
+        if (onSheetChange) {
+            onSheetChange("new");
+        }
         await refreshDocuments();
+    };
+
+    const handleDeleteRequest = () => {
+        if (selectedDoc === "new") return;
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteDialogOpen(false);
+    };
+
+    const handleDeleteConfirm = async () => {
+        await handleAction(handleDelete, "Document deleted", "Failed to delete");
+        setDeleteDialogOpen(false);
     };
 
     return (
@@ -245,12 +345,23 @@ function SheetActionButtons({ data, readonly, onSheetChange }) {
             <MDButton
                 variant="contained"
                 color="error"
-                onClick={() => handleAction(handleDelete, "Document deleted", "Failed to delete")}
+                onClick={handleDeleteRequest}
                 style={{ marginLeft: 10 }}
                 disabled={selectedDoc === "new"}
             >
                 Delete
             </MDButton>
+
+            <MDConfirmDialog
+                open={deleteDialogOpen}
+                title="Delete Document"
+                content="Are you sure you want to delete this document? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="error"
+                onClose={handleDeleteCancel}
+                onConfirm={handleDeleteConfirm}
+            />
 
             <MDSnackbar
                 color={snackbar.severity}

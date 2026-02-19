@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 // @mui material components
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { format, isValid, parse } from "date-fns";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 
@@ -12,6 +13,7 @@ import { useMaterialUIController } from "context";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDBox from "components/MDBox";
+import { useTheme } from "@mui/material/styles";
 
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -31,20 +33,90 @@ function WeeklyItinerary() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
     const { user } = useAuth();
+    const theme = useTheme();
 
     const [state, setState] = useState({
         week: "",
         objectives: "",
         deadlines: "",
         dailyRemarks: {
-            Monday: { date: "", remarks: "" },
-            Tuesday: { date: "", remarks: "" },
-            Wednesday: { date: "", remarks: "" },
-            Thursday: { date: "", remarks: "" },
-            Friday: { date: "", remarks: "" },
-            Saturday: { date: "", remarks: "" },
+            Monday: { date: null, remarks: "" },
+            Tuesday: { date: null, remarks: "" },
+            Wednesday: { date: null, remarks: "" },
+            Thursday: { date: null, remarks: "" },
+            Friday: { date: null, remarks: "" },
+            Saturday: { date: null, remarks: "" },
         },
     });
+
+    const parseDateValue = (value) => {
+        if (!value) return null;
+        if (value instanceof Date && isValid(value)) return value;
+
+        const parsedFromFormat = parse(value, "MM/dd/yyyy", new Date());
+        if (isValid(parsedFromFormat)) return parsedFromFormat;
+
+        const parsedNative = new Date(value);
+        return isValid(parsedNative) ? parsedNative : null;
+    };
+
+    const formatDateValue = (value) => {
+        if (!value) return null;
+        if (value instanceof Date && isValid(value)) return format(value, "MM/dd/yyyy");
+        return value;
+    };
+
+    const datePickerSlotProps = {
+        popper: {
+            sx: {
+                "& .MuiPickersDay-root": {
+                    color: `${theme.palette.text.primary} !important`,
+                },
+            },
+        },
+        day: {
+            sx: {
+                color: `${theme.palette.text.primary} !important`,
+                "&.Mui-disabled": {
+                    opacity: 0.25,
+                    color: `${theme.palette.text.disabled} !important`,
+                },
+                "&.Mui-focusVisible:not(.Mui-selected)": {
+                    backgroundColor: "transparent !important",
+                    boxShadow: "none !important",
+                },
+                "&.Mui-selected": {
+                    backgroundColor: `${theme.palette.info.main} !important`,
+                    color: `${theme.palette.common.white} !important`,
+                },
+                "&.Mui-selected:hover": {
+                    backgroundColor: `${theme.palette.info.main} !important`,
+                },
+                "&.MuiPickersDay-today:not(.Mui-selected)": {
+                    backgroundColor: "transparent !important",
+                    border: `1px solid ${theme.palette.info.main} !important`,
+                },
+                "&.MuiPickersDay-today.Mui-selected": {
+                    border: `1px solid ${theme.palette.common.white} !important`,
+                },
+            },
+        },
+        textField: {
+            placeholder: "MM/DD/YYYY",
+            sx: {
+                maxWidth: "180px",
+                "& input": {
+                    color: `${theme.palette.text.primary} !important`,
+                },
+                "& .MuiSvgIcon-root": {
+                    color: `${theme.palette.text.primary} !important`,
+                },
+                "& .MuiInputAdornment-root .MuiIconButton-root": {
+                    color: `${theme.palette.text.primary} !important`,
+                },
+            },
+        },
+    };
 
     const handleInputChange = (field, value, day = null) => {
         if (day) {
@@ -184,13 +256,32 @@ function WeeklyItinerary() {
                                             {day.toUpperCase()}
                                         </MDTypography>
                                         <DatePicker
-                                            value={state.dailyRemarks[day].date}
+                                            value={parseDateValue(state.dailyRemarks[day].date)}
                                             onChange={(date) =>
-                                                handleInputChange("date", date, day)
+                                                handleInputChange(
+                                                    "date",
+                                                    formatDateValue(date),
+                                                    day
+                                                )
                                             }
                                             shouldDisableDate={(date) => !isValidDate(day, date)}
+                                            slotProps={datePickerSlotProps}
                                             renderInput={(params) => (
-                                                <MDInput fullWidth {...params} />
+                                                <MDInput
+                                                    fullWidth
+                                                    {...params}
+                                                    sx={{
+                                                        "& input": {
+                                                            color: `${theme.palette.text.primary} !important`,
+                                                        },
+                                                        "& .MuiSvgIcon-root": {
+                                                            color: `${theme.palette.text.primary} !important`,
+                                                        },
+                                                        "& .MuiInputAdornment-root .MuiIconButton-root": {
+                                                            color: `${theme.palette.text.primary} !important`,
+                                                        },
+                                                    }}
+                                                />
                                             )}
                                         />
                                         <MDInput
