@@ -21,13 +21,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
-import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
-
-const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function AnnualCorporateDistributionList() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [rows, setRows] = useState([{}]);
     const [data, setData] = useState([]);
@@ -168,40 +168,32 @@ function AnnualCorporateDistributionList() {
                 ["Add: Contingency", formDetails.contingency],
                 ["Overall Total", formDetails.overallTotal],
             ],
+            formData: { rows, formDetails },
         };
     }
 
-    const handleSheetChange = (spreadsheetId, sheetName) => {
-        if (spreadsheetId) {
-            // Load the sheet data using the currentSpreadsheetId
-            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
-                const values = response.values || [];
-                const updatedRows = values.slice(3, values.length - 3).map((row) => ({
-                    no: row[0] || "",
-                    company: row[1] || "",
-                    recipient: row[2] || "",
-                    designation: row[3] || "",
-                    category1TypeA: row[4] || "",
-                    category1TypeB: row[5] || "",
-                    category1TypeC: row[6] || "",
-                    category2TypeA: row[7] || "",
-                    category2TypeB: row[8] || "",
-                    category2TypeC: row[9] || "",
-                }));
-
-                setRows(updatedRows);
-                setFormDetails({
-                    totalInitialRequest: values[values.length - 3][1] || "",
-                    contingency: values[values.length - 2][1] || "",
-                    overallTotal: values[values.length - 1][1] || "",
-                });
-            });
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(
+                user.uid,
+                "Annual Corporate Distribution List",
+                docId
+            );
+            if (docData && docData.formData) {
+                setRows(docData.formData.rows || [{}]);
+                setFormDetails(
+                    docData.formData.formDetails || {
+                        totalInitialRequest: "",
+                        contingency: "",
+                        overallTotal: "",
+                    }
+                );
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
         }
     };
-
-    useEffect(() => {
-        handleSheetChange();
-    }, []);
 
     return (
         <DashboardLayout>

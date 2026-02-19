@@ -2,10 +2,9 @@
 import { useState } from "react";
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
-import Checkbox from "@mui/material/Checkbox";
 import Card from "@mui/material/Card";
 
 // Material Dashboard 2 React components
@@ -22,12 +21,15 @@ import CoverLayout from "layouts/authentication/components/CoverLayout";
 // Images
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 
-import MasterSheetDb from "utils/MasterSheetDb";
-import SpreadsheetService from "utils/SpreadsheetService";
+// Firebase
+import { auth } from "firebaseConfig";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { saveUserProfile } from "utils/firestoreService";
 
 function Cover() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const navigate = useNavigate();
 
     // Inputs
     const [username, setUsername] = useState("");
@@ -38,8 +40,6 @@ function Cover() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
-    const masterSheetDb = new MasterSheetDb();
-
     const handleSnackbarClose = () => {
         setSnackbar({ ...snackbar, open: false });
     };
@@ -49,22 +49,44 @@ function Cover() {
     };
 
     const handleSignUp = async () => {
+        // Client-side validation
+        if (password !== confirmPassword) {
+            showSnackbar("Passwords do not match", "error");
+            return;
+        }
+        if (password.length < 8) {
+            showSnackbar("Password must be at least 8 characters", "error");
+            return;
+        }
+
         try {
-            const newUser = await masterSheetDb.createUser(
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const firebaseUser = userCredential.user;
+
+            // Set display name on Firebase Auth profile
+            const displayName = username || `${firstName} ${lastName}`.trim();
+            await updateProfile(firebaseUser, { displayName });
+
+            // Create Firestore user profile
+            await saveUserProfile(firebaseUser.uid, {
+                email,
+                displayName,
                 username,
                 firstName,
                 lastName,
-                email,
-                "info",
-                password
-            );
-            localStorage.setItem("user", JSON.stringify(newUser));
-            showSnackbar(`Hello ${username}\nRedirecting...`, "success");
-            setTimeout(() => {
-                window.location.href = "/dashboard";
-            }, 300);
+                preferredColor: "info",
+                createdAt: new Date().toISOString(),
+            });
+
+            showSnackbar(`Hello ${displayName}! Redirecting...`, "success");
+            setTimeout(() => navigate("/dashboard"), 300);
         } catch (error) {
-            showSnackbar(`Error: ${error.message}`, "error");
+            const messages = {
+                "auth/email-already-in-use": "An account with this email already exists",
+                "auth/invalid-email": "Invalid email format",
+                "auth/weak-password": "Password is too weak (min 6 characters)",
+            };
+            showSnackbar(messages[error.code] || error.message, "error");
         }
     };
 

@@ -43,8 +43,11 @@ import {
     setOpenConfigurator,
 } from "context";
 
-import MasterSheetDb from "utils/MasterSheetDb"; // Import MasterSheetDb
-import { readFileAsDataURL } from "utils/fileUtils"; // Import utility function to read file as data URL
+import { useAuth } from "context/AuthContext";
+import { saveUserProfile } from "utils/firestoreService";
+import { readFileAsDataURL } from "utils/fileUtils";
+import { auth as firebaseAuth } from "firebaseConfig";
+import { signOut, updateProfile } from "firebase/auth";
 
 function DashboardNavbar({ absolute, light, isMini }) {
     const [navbarType, setNavbarType] = useState();
@@ -64,45 +67,39 @@ function DashboardNavbar({ absolute, light, isMini }) {
     const [firstName, setFirstName] = useState("John");
     const [lastName, setLastName] = useState("Doe");
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-    const [profilePhoto, setProfilePhoto] = useState("/static/images/avatar/1.jpg"); // Default profile photo
+    const [profilePhoto, setProfilePhoto] = useState("/static/images/avatar/1.jpg");
     const route = useLocation().pathname.split("/").slice(1);
-    const masterSheetDb = new MasterSheetDb(); // Initialize MasterSheetDb
+    const { user, profile, setProfile } = useAuth();
 
     useEffect(() => {
-        // Setting the navbar type
         if (fixedNavbar) {
             setNavbarType("sticky");
         } else {
             setNavbarType("static");
         }
 
-        // A function that sets the transparent state of the navbar.
         function handleTransparentNavbar() {
             setTransparentNavbar(dispatch, (fixedNavbar && window.scrollY === 0) || !fixedNavbar);
         }
 
-        /** 
-     The event listener that's calling the handleTransparentNavbar function when 
-     scrolling the window.
-    */
         window.addEventListener("scroll", handleTransparentNavbar);
-
-        // Call the handleTransparentNavbar function to set the state with the initial value.
         handleTransparentNavbar();
-
-        // Remove event listener on cleanup
         return () => window.removeEventListener("scroll", handleTransparentNavbar);
     }, [dispatch, fixedNavbar]);
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (user) {
-            setUsername(user[0]);
-            setFirstName(user[2]);
-            setLastName(user[3]);
-            setProfilePhoto(user[9] || "/static/images/avatar/1.jpg"); // Load profile photo from user data
+        if (profile) {
+            setUsername(profile.username || profile.displayName || "");
+            setFirstName(profile.firstName || "");
+            setLastName(profile.lastName || "");
+            setProfilePhoto(
+                profile.profilePhoto || user?.photoURL || "/static/images/avatar/1.jpg"
+            );
+        } else if (user) {
+            setUsername(user.displayName || "");
+            setProfilePhoto(user.photoURL || "/static/images/avatar/1.jpg");
         }
-    }, []);
+    }, [user, profile]);
 
     const handleMiniSidenav = () => setMiniSidenav(dispatch, !miniSidenav);
     const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
@@ -121,37 +118,43 @@ function DashboardNavbar({ absolute, light, isMini }) {
         setSnackbar({ open: true, message, severity });
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("user");
-        showSnackbar("Logged out successfully", "success");
-        setTimeout(() => {
-            window.location.href = "/authentication/sign-in";
-        }, 1500);
+    const handleLogout = async () => {
+        try {
+            await signOut(firebaseAuth);
+            showSnackbar("Logged out successfully", "success");
+        } catch (error) {
+            showSnackbar(`Error: ${error.message}`, "error");
+        }
     };
 
     const handleProfilePhotoChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const base64Image = await readFileAsDataURL(file); // Convert file to base64
-            console.log(base64Image);
+            const base64Image = await readFileAsDataURL(file);
             setProfilePhoto(base64Image);
-            const user = JSON.parse(localStorage.getItem("user"));
-            user[9] = base64Image;
-            localStorage.setItem("user", JSON.stringify(user));
-            showSnackbar("Profile photo updated successfully", "success");
+            showSnackbar("Profile photo updated (will save on Save)", "success");
         }
     };
 
     const handleSaveProfile = async () => {
         try {
-            const user = JSON.parse(localStorage.getItem("user"));
-            const updatedUser = await masterSheetDb.updateUser(user[4], {
+            const displayName = username || `${firstName} ${lastName}`.trim();
+            await updateProfile(user, { displayName });
+            await saveUserProfile(user.uid, {
                 username,
                 firstName,
                 lastName,
+                displayName,
                 profilePhoto,
             });
-            localStorage.setItem("user", JSON.stringify(updatedUser));
+            setProfile((prev) => ({
+                ...prev,
+                username,
+                firstName,
+                lastName,
+                displayName,
+                profilePhoto,
+            }));
             showSnackbar("Profile updated successfully", "success");
             setEditMode(false);
         } catch (error) {

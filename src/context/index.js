@@ -11,6 +11,25 @@ import PropTypes from "prop-types";
 // Material Dashboard 2 React main context
 const MaterialUI = createContext();
 
+const PREFS_KEY = "material-dashboard-preferences";
+
+function readStoredPreferences() {
+    try {
+        const raw = localStorage.getItem(PREFS_KEY);
+        return raw ? JSON.parse(raw) : {};
+    } catch (error) {
+        return {};
+    }
+}
+
+function writeStoredPreferences(preferences) {
+    try {
+        localStorage.setItem(PREFS_KEY, JSON.stringify(preferences));
+    } catch (error) {
+        // Ignore storage write failures (e.g., private mode/quota)
+    }
+}
+
 // Setting custom name for the context which is visible on react dev tools
 MaterialUI.displayName = "MaterialUIContext";
 
@@ -55,17 +74,19 @@ function reducer(state, action) {
 
 // Material Dashboard 2 React context provider
 function MaterialUIControllerProvider({ children }) {
+    const storedPreferences = readStoredPreferences();
+
     const initialState = {
-        miniSidenav: false,
-        transparentSidenav: false,
-        whiteSidenav: false,
-        sidenavColor: "info",
+        miniSidenav: storedPreferences.miniSidenav ?? false,
+        transparentSidenav: storedPreferences.transparentSidenav ?? false,
+        whiteSidenav: storedPreferences.whiteSidenav ?? false,
+        sidenavColor: storedPreferences.sidenavColor ?? "info",
         transparentNavbar: true,
-        fixedNavbar: true,
+        fixedNavbar: storedPreferences.fixedNavbar ?? true,
         openConfigurator: false,
         direction: "ltr",
         layout: "dashboard",
-        darkMode: false,
+        darkMode: storedPreferences.darkMode ?? false,
     };
 
     const [controller, dispatch] = useReducer(reducer, initialState);
@@ -94,16 +115,43 @@ MaterialUIControllerProvider.propTypes = {
 };
 
 // Context module functions
-const setMiniSidenav = (dispatch, value) => dispatch({ type: "MINI_SIDENAV", value });
-const setTransparentSidenav = (dispatch, value) => dispatch({ type: "TRANSPARENT_SIDENAV", value });
-const setWhiteSidenav = (dispatch, value) => dispatch({ type: "WHITE_SIDENAV", value });
-const setSidenavColor = (dispatch, value) => dispatch({ type: "SIDENAV_COLOR", value });
+const setMiniSidenav = (dispatch, value) => {
+    const stored = readStoredPreferences();
+    writeStoredPreferences({ ...stored, miniSidenav: value });
+    dispatch({ type: "MINI_SIDENAV", value });
+};
+
+const setTransparentSidenav = (dispatch, value) => {
+    const stored = readStoredPreferences();
+    writeStoredPreferences({ ...stored, transparentSidenav: value });
+    dispatch({ type: "TRANSPARENT_SIDENAV", value });
+};
+
+const setWhiteSidenav = (dispatch, value) => {
+    const stored = readStoredPreferences();
+    writeStoredPreferences({ ...stored, whiteSidenav: value });
+    dispatch({ type: "WHITE_SIDENAV", value });
+};
+
+const setSidenavColor = (dispatch, value) => {
+    const stored = readStoredPreferences();
+    writeStoredPreferences({ ...stored, sidenavColor: value });
+    dispatch({ type: "SIDENAV_COLOR", value });
+};
 const setTransparentNavbar = (dispatch, value) => dispatch({ type: "TRANSPARENT_NAVBAR", value });
-const setFixedNavbar = (dispatch, value) => dispatch({ type: "FIXED_NAVBAR", value });
+const setFixedNavbar = (dispatch, value) => {
+    const stored = readStoredPreferences();
+    writeStoredPreferences({ ...stored, fixedNavbar: value });
+    dispatch({ type: "FIXED_NAVBAR", value });
+};
 const setOpenConfigurator = (dispatch, value) => dispatch({ type: "OPEN_CONFIGURATOR", value });
 const setDirection = (dispatch, value) => dispatch({ type: "DIRECTION", value });
 const setLayout = (dispatch, value) => dispatch({ type: "LAYOUT", value });
-const setDarkMode = (dispatch, value) => dispatch({ type: "DARKMODE", value });
+const setDarkMode = (dispatch, value) => {
+    const stored = readStoredPreferences();
+    writeStoredPreferences({ ...stored, darkMode: value });
+    dispatch({ type: "DARKMODE", value });
+};
 
 export {
     MaterialUIControllerProvider,

@@ -20,13 +20,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
-import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
-
-const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function ClientEntertainmentRequest() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [formData, setFormData] = useState({
         remarks: "",
@@ -82,35 +82,21 @@ function ClientEntertainmentRequest() {
                 [""],
                 ["Approved (President)", formData.approved],
             ],
+            formData: formData,
         };
     }
 
-    const handleSheetChange = (spreadsheetId, sheetName) => {
-        if (spreadsheetId) {
-            // Load the sheet data using the currentSpreadsheetId
-            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
-                const values = response.values || [];
-                setFormData({
-                    remarks: values[3] && values[3][0] ? values[3][0] : "",
-                    targetDate: values[5] && values[5][1] ? values[5][1] : "",
-                    entLocation: values[5] && values[5][3] ? values[5][3] : "",
-                    schoolOrganization: values[6] && values[6][1] ? values[6][1] : "",
-                    clients: values[6] && values[6][3] ? values[6][3] : "",
-                    designation: values[7] && values[7][1] ? values[7][1] : "",
-                    reasonRemarks: values[7] && values[7][3] ? values[7][3] : "",
-                    targetEntItems: values[8] && values[8][1] ? values[8][1] : "",
-                    estimatedAmount: values[8] && values[8][3] ? values[8][3] : "",
-                    requestedByDate: values[9] && values[9][1] ? values[9][1] : "",
-                    noted: values[9] && values[9][3] ? values[9][3] : "",
-                    approved: values[11] && values[11][1] ? values[11][1] : "",
-                });
-            });
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(user.uid, "Client Entertainment Request", docId);
+            if (docData && docData.formData) {
+                setFormData(docData.formData);
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
         }
     };
-
-    useEffect(() => {
-        handleSheetChange();
-    }, []);
 
     return (
         <DashboardLayout>

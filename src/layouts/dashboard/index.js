@@ -7,6 +7,7 @@ import MDTypography from "components/MDTypography";
 
 // Material Dashboard 2 React example components
 import { useMaterialUIController } from "context";
+import { useAuth } from "context/AuthContext";
 import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
 import ReportsLineChart from "examples/Charts/LineCharts/ReportsLineChart";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -31,7 +32,7 @@ function Dashboard() {
     const { sidenavColor } = controller;
 
     const { sales, tasks } = reportsLineChartData;
-    const user = localStorage.getItem("user");
+    const { user, profile } = useAuth();
     //console.log(configs.footer.company);
 
     return (
@@ -156,7 +157,7 @@ function Dashboard() {
                                 <ComplexStatisticsCard
                                     icon="person"
                                     title="Welcome"
-                                    count={user ? JSON.parse(user)[0] : "User"}
+                                    count={user?.displayName || profile?.displayName || "User"}
                                     percentage={{
                                         color: "success",
                                         amount: "",

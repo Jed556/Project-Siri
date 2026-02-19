@@ -1,19 +1,11 @@
 // React components
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // react-router-dom components
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
-import Switch from "@mui/material/Switch";
-import MuiLink from "@mui/material/Link";
 import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid";
-
-// @mui icons
-import FacebookIcon from "@mui/icons-material/Facebook";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import GoogleIcon from "@mui/icons-material/Google";
 
 // Material Dashboard 2 React components
 import { useMaterialUIController } from "context";
@@ -29,20 +21,18 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
-import MasterSheetDb from "utils/MasterSheetDb";
+// Firebase Auth
+import { auth } from "firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 function Basic() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const navigate = useNavigate();
 
-    const [rememberMe, setRememberMe] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-
-    const handleSetRememberMe = () => setRememberMe(!rememberMe);
-
-    const masterSheetDb = new MasterSheetDb(); // Initialize MasterSheetDb
 
     const handleSnackbarClose = () => {
         setSnackbar({ ...snackbar, open: false });
@@ -52,28 +42,19 @@ function Basic() {
         setSnackbar({ open: true, message, severity });
     };
 
-    // Clear local storage variable "user" if it exists
-    useEffect(() => {
-        if (localStorage.getItem("user")) {
-            localStorage.removeItem("user");
-        }
-    }, []);
-
     const handleSignIn = async () => {
         try {
-            const user = await masterSheetDb.getUser(email);
-            // console.log("Comparing user and password", user, password);
-            if (user && user[8] === password) {
-                localStorage.setItem("user", JSON.stringify(user));
-                setTimeout(() => {
-                    window.location.href = "/dashboard";
-                }, 300);
-                showSnackbar(`Welcome ${user[0]}!`, "success");
-            } else {
-                showSnackbar("Invalid email or password", "error");
-            }
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            showSnackbar(`Welcome back!`, "success");
+            setTimeout(() => navigate("/dashboard"), 300);
         } catch (error) {
-            showSnackbar(`Error: ${error.message}`, "error");
+            const messages = {
+                "auth/user-not-found": "No account found with this email",
+                "auth/wrong-password": "Invalid password",
+                "auth/invalid-email": "Invalid email format",
+                "auth/invalid-credential": "Invalid email or password",
+            };
+            showSnackbar(messages[error.code] || error.message, "error");
         }
     };
 

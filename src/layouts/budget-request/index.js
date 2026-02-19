@@ -21,13 +21,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
-import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
-
-const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function BudgetRequest() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [rows, setRows] = useState([{}]);
     const [data, setData] = useState([]);
@@ -96,33 +96,21 @@ function BudgetRequest() {
                     row.sun || "",
                 ]),
             ],
+            formData: { rows },
         };
     }
 
-    const handleSheetChange = (spreadsheetId, sheetName) => {
-        if (spreadsheetId) {
-            // Load the sheet data using the currentSpreadsheetId
-            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
-                const values = response.values || [];
-                const updatedRows = values.slice(3).map((row) => ({
-                    category: row[0] || "",
-                    mon: row[1] || "",
-                    tue: row[2] || "",
-                    wed: row[3] || "",
-                    thu: row[4] || "",
-                    fri: row[5] || "",
-                    sat: row[6] || "",
-                    sun: row[7] || "",
-                }));
-
-                setRows(updatedRows);
-            });
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(user.uid, "Budget Request", docId);
+            if (docData && docData.formData) {
+                setRows(docData.formData.rows || [{}]);
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
         }
     };
-
-    useEffect(() => {
-        handleSheetChange();
-    }, []);
 
     return (
         <DashboardLayout>

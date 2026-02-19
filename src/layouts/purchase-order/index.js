@@ -22,13 +22,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
-import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
-
-const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function PurchaseOrder() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [items, setItems] = useState([{}]);
     const [data, setData] = useState([]);
@@ -148,43 +148,21 @@ function PurchaseOrder() {
                     bottomDetails.supplierDate,
                 ],
             ],
+            formData: { orderDetails, items, bottomDetails },
         };
     }
 
-    const handleSheetChange = (spreadsheetId, sheetName) => {
-        if (spreadsheetId) {
-            // Load the sheet data using the currentSpreadsheetId
-            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
-                const values = response.values || [];
-                const orderDetails = {
-                    poNumber: values[3][1] || "",
-                    date: values[3][3] || "",
-                    paymentTerms: values[4][1] || "",
-                    supplierName: values[5][1] || "",
-                    address: values[6][1] || "",
-                    delivery: values[7][1] || "",
-                    attention: values[8][1] || "",
-                    pickUp: values[8][3] || "",
-                };
-                const items = values.slice(11, values.length - 3).map((row) => ({
-                    itemNumber: row[0] || "",
-                    description: row[1] || "",
-                    quantity: row[2] || "",
-                    unit: row[3] || "",
-                    unitPrice: row[4] || "",
-                    amount: row[5] || "",
-                }));
-                const bottomDetails = {
-                    preparedBy: values[values.length - 2][1] || "",
-                    approvedBy: values[values.length - 2][3] || "",
-                    receivedBy: values[values.length - 1][1] || "",
-                    supplierDate: values[values.length - 1][3] || "",
-                };
-
-                setOrderDetails(orderDetails);
-                setItems(items);
-                setBottomDetails(bottomDetails);
-            });
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(user.uid, "Purchase Order", docId);
+            if (docData && docData.formData) {
+                setOrderDetails(docData.formData.orderDetails || {});
+                setItems(docData.formData.items || [{}]);
+                setBottomDetails(docData.formData.bottomDetails || {});
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
         }
     };
 

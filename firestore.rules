@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidTimestamp(field) {
+      return request.resource.data[field] is timestamp;
+    }
+
+    // ── User profiles ─────────────────────────────────────────────
+    // Path: users/{userId}
+    match /users/{userId} {
+      // Users can read/write only their own profile
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+                    && request.resource.data.keys().hasAll(['email', 'displayName'])
+                    && request.resource.data.email is string
+                    && request.resource.data.displayName is string;
+      allow update: if isOwner(userId);
+      allow delete: if false; // Profiles cannot be deleted
+
+      // ── Form subcollections ───────────────────────────────────
+      // Path: users/{userId}/{formType}/{docId}
+      // Each form type is a subcollection under the user document.
+      // Supported: weekly-itinerary, training-commencement, site-visit,
+      //   summary-of-accounts, summary-of-arrangement,
+      //   summary-of-target-accounts, masterlist-of-accounts,
+      //   purchase-order, annual-corporate-distribution,
+      //   budget-request, budget-release-tracker,
+      //   client-entertainment-request
+      match /{formType}/{docId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId)
+                      && request.resource.data.keys().hasAll(['type', 'name', 'updatedAt'])
+                      && request.resource.data.type is string
+                      && request.resource.data.name is string;
+        allow update: if isOwner(userId);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

@@ -21,13 +21,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
-import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
-
-const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function SummaryOfAccounts() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [rows, setRows] = useState([{}]);
     const [data, setData] = useState([]);
@@ -148,39 +148,21 @@ function SummaryOfAccounts() {
                     row.meals_and_accom || "",
                 ]),
             ],
+            formData: { rows },
         };
     }
 
-    const handleSheetChange = (spreadsheetId, sheetName) => {
-        if (spreadsheetId) {
-            // Load the sheet data using the currentSpreadsheetId
-            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
-                const values = response.values || [];
-                const updatedRows = values.slice(3).map((row) => ({
-                    account: row[0] || "",
-                    soa_no: row[1] || "",
-                    soa_date: row[2] || "",
-                    training: row[3] || "",
-                    training_date: row[4] || "",
-                    no_of_pax: row[5] || "",
-                    amount_billed: row[6] || "",
-                    amount_collected: row[7] || "",
-                    base_fee: row[8] || "",
-                    disc_or_mu: row[9] || "",
-                    af_r: row[10] || "",
-                    af: row[11] || "",
-                    training_fee: row[12] || "",
-                    meals_and_accom: row[13] || "",
-                }));
-
-                setRows(updatedRows);
-            });
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(user.uid, "Summary of Accounts", docId);
+            if (docData && docData.formData) {
+                setRows(docData.formData.rows || [{}]);
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
         }
     };
-
-    useEffect(() => {
-        handleSheetChange();
-    }, []);
 
     return (
         <DashboardLayout>

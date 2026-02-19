@@ -21,13 +21,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
-import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
-
-const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function BudgetReleaseTracker() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [rows, setRows] = useState([{}]);
     const [data, setData] = useState([]);
@@ -93,29 +93,21 @@ function BudgetReleaseTracker() {
                     row.amount || "",
                 ]),
             ],
+            formData: { rows },
         };
     }
 
-    const handleSheetChange = (spreadsheetId, sheetName) => {
-        if (spreadsheetId) {
-            // Load the sheet data using the currentSpreadsheetId
-            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
-                const values = response.values || [];
-                const updatedRows = values.slice(3).map((row) => ({
-                    when: row[0] || "",
-                    who: row[1] || "",
-                    what: row[2] || "",
-                    amount: row[3] || "",
-                }));
-
-                setRows(updatedRows);
-            });
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(user.uid, "Budget Release Tracker", docId);
+            if (docData && docData.formData) {
+                setRows(docData.formData.rows || [{}]);
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
         }
     };
-
-    useEffect(() => {
-        handleSheetChange();
-    }, []);
 
     return (
         <DashboardLayout>

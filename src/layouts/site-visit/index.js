@@ -21,10 +21,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function SiteVisitForm() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [clientRows, setClientRows] = useState([{}, {}]);
     const [actionRows, setActionRows] = useState([{}]);
@@ -70,6 +73,45 @@ function SiteVisitForm() {
         pc: <MDInput fullWidth name={`pc${index + 1}`} />,
         status: <MDInput fullWidth name={`status${index + 1}`} />,
     }));
+
+    function formatTableData() {
+        return {
+            spreadsheetTitle: "Site_Visit",
+            sheetName: "Site_Visit",
+            fileName: `Site_Visit_${new Date().toISOString().replace(/[:.]/g, "-")}`,
+            type: "Site Visit",
+            rows: [
+                ["SITE VISIT FORM"],
+                [""],
+                ["Client Attendees"],
+                ["#", "Name", "Designation"],
+                ...clientRows.map((row, i) => [i + 1, row.name || "", row.designation || ""]),
+                [""],
+                ["Action Items"],
+                ["Action Items", "Target Date", "P/C", "Status"],
+                ...actionRows.map((row) => [
+                    row.action || "",
+                    row.targetDate || "",
+                    row.pc || "",
+                    row.status || "",
+                ]),
+            ],
+            formData: { clientRows, actionRows },
+        };
+    }
+
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(user.uid, "Site Visit", docId);
+            if (docData && docData.formData) {
+                setClientRows(docData.formData.clientRows || [{}, {}]);
+                setActionRows(docData.formData.actionRows || [{}]);
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
+        }
+    };
 
     return (
         <DashboardLayout>
@@ -147,7 +189,10 @@ function SiteVisitForm() {
                                         </MDButton>
                                     </MDBox>
                                 </MDBox>
-                                <SheetActionButtons sheetId="" />
+                                <SheetActionButtons
+                                    data={formatTableData()}
+                                    onSheetChange={handleSheetChange}
+                                />
                             </MDBox>
                         </Card>
                     </Grid>

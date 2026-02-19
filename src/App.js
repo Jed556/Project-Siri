@@ -8,6 +8,9 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Icon from "@mui/material/Icon";
 
+// Firebase Auth
+import { useAuth } from "context/AuthContext";
+
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 
@@ -53,6 +56,7 @@ export default function App() {
     const [onMouseEnter, setOnMouseEnter] = useState(false);
     const [rtlCache, setRtlCache] = useState(null);
     const { pathname } = useLocation();
+    const { user, loading } = useAuth();
 
     // Cache for the rtl
     useMemo(() => {
@@ -93,6 +97,11 @@ export default function App() {
         document.documentElement.scrollTop = 0;
         document.scrollingElement.scrollTop = 0;
     }, [pathname]);
+
+    // While Firebase Auth is loading, show nothing
+    if (loading) return null;
+
+    const isAuthPage = pathname.startsWith("/authentication");
 
     const getRoutes = (allRoutes) =>
         allRoutes.map((route) => {
@@ -156,14 +165,23 @@ export default function App() {
                 {layout === "vr" && <Configurator />}
                 <Routes>
                     {getRoutes(routes)}
-                    <Route path="*" element={<Navigate to="/dashboard" />} />
+                    <Route
+                        path="*"
+                        element={
+                            user ? (
+                                <Navigate to="/dashboard" />
+                            ) : (
+                                <Navigate to="/authentication/sign-in" />
+                            )
+                        }
+                    />
                 </Routes>
             </ThemeProvider>
         </CacheProvider>
     ) : (
         <ThemeProvider theme={darkMode ? themeDark : theme}>
             <CssBaseline />
-            {layout === "dashboard" && (
+            {layout === "dashboard" && user && (
                 <>
                     <Sidenav
                         color={sidenavColor}
@@ -178,13 +196,21 @@ export default function App() {
                         onMouseLeave={handleOnMouseLeave}
                     />
                     <Configurator />
-                    {/* {configsButton} */}
                 </>
             )}
             {layout === "vr" && <Configurator />}
             <Routes>
                 {getRoutes(routes)}
-                <Route path="*" element={<Navigate to="/authentication/sign-in" />} />
+                <Route
+                    path="*"
+                    element={
+                        user ? (
+                            <Navigate to="/dashboard" />
+                        ) : (
+                            <Navigate to="/authentication/sign-in" />
+                        )
+                    }
+                />
             </Routes>
         </ThemeProvider>
     );

@@ -21,13 +21,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
-import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
-
-const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function MasterlistOfAccounts() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [rows, setRows] = useState([{}]);
     const [data, setData] = useState([]);
@@ -102,31 +102,21 @@ function MasterlistOfAccounts() {
                     row.email || "",
                 ]),
             ],
+            formData: { rows },
         };
     }
 
-    const handleSheetChange = (spreadsheetId, sheetName) => {
-        if (spreadsheetId) {
-            // Load the sheet data using the currentSpreadsheetId
-            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
-                const values = response.values || [];
-                const updatedRows = values.slice(3).map((row) => ({
-                    account: row[0] || "",
-                    contactPerson: row[1] || "",
-                    position: row[2] || "",
-                    address: row[3] || "",
-                    contactNo: row[4] || "",
-                    email: row[5] || "",
-                }));
-
-                setRows(updatedRows);
-            });
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(user.uid, "Masterlist Of Accounts", docId);
+            if (docData && docData.formData) {
+                setRows(docData.formData.rows || [{}]);
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
         }
     };
-
-    useEffect(() => {
-        handleSheetChange();
-    }, []);
 
     return (
         <DashboardLayout>

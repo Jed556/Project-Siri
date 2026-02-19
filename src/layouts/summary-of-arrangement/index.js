@@ -21,13 +21,13 @@ import Footer from "examples/Footer";
 
 // Configs
 import configs from "config";
-import SpreadsheetService from "utils/SpreadsheetService"; // Import SpreadsheetService
-
-const spreadsheetService = new SpreadsheetService(); // Initialize SpreadsheetService
+import { useAuth } from "context/AuthContext";
+import { getFormDocument } from "utils/firestoreService";
 
 function SummaryOfArrangement() {
     const [controller] = useMaterialUIController();
     const { sidenavColor } = controller;
+    const { user } = useAuth();
 
     const [rows, setRows] = useState([{}]);
 
@@ -79,6 +79,7 @@ function SummaryOfArrangement() {
                     row.remarks || "",
                 ]),
             ],
+            formData: { rows },
         };
     }
 
@@ -229,37 +230,17 @@ function SummaryOfArrangement() {
         ),
     }));
 
-    const handleSheetChange = (spreadsheetId, sheetName) => {
-        if (spreadsheetId) {
-            // Load the sheet data using the currentSpreadsheetId
-            spreadsheetService.getSpreadsheetValues(spreadsheetId, sheetName).then((response) => {
-                const values = response.values || [];
-                const updatedRows = values.slice(3).map((row) => ({
-                    account: row[0] || "",
-                    ae: row[1] || "",
-                    mainContacts: row[2] || "",
-                    designation: row[3] || "",
-                    courses: row[4] || "",
-                    oldRates: row[5] || "",
-                    feesBreakdown: row[6] || "",
-                    discount: row[7] || "",
-                    afR: row[8] || "",
-                    officialRate: row[9] || "",
-                    lastUpdate: row[10] || "",
-                    terms: row[11] || "",
-                    signedDocsMoa: row[12] || "",
-                    signedDocsSp: row[13] || "",
-                    remarks: row[14] || "",
-                }));
-
-                setRows(updatedRows);
-            });
+    const handleSheetChange = async (docId) => {
+        if (!docId || docId === "new") return;
+        try {
+            const docData = await getFormDocument(user.uid, "Summary of Arrangement", docId);
+            if (docData && docData.formData) {
+                setRows(docData.formData.rows || [{}]);
+            }
+        } catch (err) {
+            console.error("Failed to load document:", err);
         }
     };
-
-    useEffect(() => {
-        handleSheetChange();
-    }, []);
 
     return (
         <DashboardLayout>
