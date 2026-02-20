@@ -277,9 +277,10 @@ function WeeklyItinerary() {
                                                         "& .MuiSvgIcon-root": {
                                                             color: `${theme.palette.text.primary} !important`,
                                                         },
-                                                        "& .MuiInputAdornment-root .MuiIconButton-root": {
-                                                            color: `${theme.palette.text.primary} !important`,
-                                                        },
+                                                        "& .MuiInputAdornment-root .MuiIconButton-root":
+                                                            {
+                                                                color: `${theme.palette.text.primary} !important`,
+                                                            },
                                                     }}
                                                 />
                                             )}
