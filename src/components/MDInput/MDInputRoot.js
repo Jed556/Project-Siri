@@ -48,37 +48,10 @@ export default styled(TextField)(({ theme, ownerState }) => {
         },
     });
 
-    const numberIconSvg = encodeURIComponent(
-        `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18' width='18' height='18'>
-            <rect x='0.5' y='0.5' rx='4' ry='4' width='17' height='17' fill='none' stroke='${
-                palette.text?.main || "#000"
-            }' stroke-opacity='0.12' stroke-width='1'/>
-            <path d='M6 7 L9 4 L12 7' fill='none' stroke='${
-                palette.text?.main || "#000"
-            }' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/>
-            <path d='M6 11 L9 8 L12 11' fill='none' stroke='${
-                palette.text?.main || "#000"
-            }' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'/>
-        </svg>`
-    );
-
     return {
         backgroundColor: disabled ? `${disabledBackground} !important` : transparent.main,
         pointerEvents: disabled ? "none" : "auto",
         ...(error && errorStyles()),
         ...(success && successStyles()),
-
-        /* Custom number input appearance: hide native spinners and show rounded arrow icon */
-        "& input[type='number']": {
-            // remove native spin buttons
-            "&::-webkit-outer-spin-button": { WebkitAppearance: "none", margin: 0 },
-            "&::-webkit-inner-spin-button": { WebkitAppearance: "none", margin: 0 },
-            MozAppearance: "textfield",
-            paddingRight: pxToRem(48),
-            backgroundImage: `url("data:image/svg+xml;utf8,${numberIconSvg}")`,
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: `right ${pxToRem(12)} center`,
-            backgroundSize: `${pxToRem(20)} ${pxToRem(20)}`,
-        },
     };
 });

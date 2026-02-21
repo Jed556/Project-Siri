@@ -164,18 +164,26 @@ function SummaryOfArrangement() {
                 },
             },
         },
+        openPickerButton: {
+            sx: {
+                color: `${theme.palette.text?.main || theme.palette.text.primary} !important`,
+            },
+        },
         textField: {
             placeholder: "MM/DD/YYYY",
             sx: {
                 maxWidth: "180px",
                 "& input": {
-                    color: `${theme.palette.text.primary} !important`,
+                    color: `${theme.palette.text?.main || theme.palette.text.primary} !important`,
                 },
                 "& .MuiSvgIcon-root": {
-                    color: `${theme.palette.text.primary} !important`,
+                    color: `${theme.palette.text?.main || theme.palette.text.primary} !important`,
                 },
                 "& .MuiInputAdornment-root .MuiIconButton-root": {
-                    color: `${theme.palette.text.primary} !important`,
+                    color: `${theme.palette.text?.main || theme.palette.text.primary} !important`,
+                },
+                "& .MuiInputAdornment-root .MuiIconButton-root .MuiSvgIcon-root": {
+                    color: `${theme.palette.text?.main || theme.palette.text.primary} !important`,
                 },
             },
         },

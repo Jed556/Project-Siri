@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBV0L-jZUwmMMrpmvY7jnckZyAS9dQSr7M",
+    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
     authDomain: "siri-proj.firebaseapp.com",
     projectId: "siri-proj",
     storageBucket: "siri-proj.firebasestorage.app",

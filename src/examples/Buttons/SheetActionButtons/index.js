@@ -53,35 +53,141 @@ function makeWebSheet(data) {
 }
 
 function handleDownload(data) {
-    const workbook = makeWebSheet(data);
+    const allRows = data.rows;
+    const formTitle = allRows[0]?.[0] || data.spreadsheetTitle || "";
+    const printDate = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+
+    // Layout mirrors the print output:
+    //   row 0  – form title (bold, larger)
+    //   row 1  – date
+    //   row 2  – blank spacer
+    //   row 3  – column headers (bold + bordered)
+    //   row 4+ – data rows (bordered)
+    const tableRows = allRows.slice(2); // strip original title + blank rows
+    const downloadRows = [[formTitle], [printDate], [], ...tableRows];
+
+    const worksheet = utils.aoa_to_sheet(downloadRows);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, data.sheetName);
+
+    // Auto column widths
+    const colWidths = downloadRows.reduce((widths, row) => {
+        row.forEach((value, index) => {
+            const cellValue = value ? value.toString() : "";
+            widths[index] = Math.max(widths[index] || 10, cellValue.length);
+        });
+        return widths;
+    }, []);
+    worksheet["!cols"] = colWidths.map((width) => ({ wch: width }));
+
+    const range = utils.decode_range(worksheet["!ref"]);
+    const HEADER_ROW = 3; // 0-based index of the column-header row
+    const thinBorder = {
+        top: { style: "thin" },
+        bottom: { style: "thin" },
+        left: { style: "thin" },
+        right: { style: "thin" },
+    };
+
+    for (let rowNum = range.s.r; rowNum <= range.e.r; rowNum++) {
+        worksheet["!rows"] = worksheet["!rows"] || [];
+        worksheet["!rows"][rowNum] = { hpx: rowNum === 0 ? 24 : 20 };
+
+        for (let colNum = range.s.c; colNum <= range.e.c; colNum++) {
+            const addr = utils.encode_cell({ r: rowNum, c: colNum });
+            const cell = worksheet[addr] || { t: "z", v: "" };
+            cell.s = cell.s || {};
+
+            // Bold + larger font for title
+            if (rowNum === 0) {
+                cell.s.font = { bold: true, sz: 14 };
+            }
+
+            // Bold for column-header row
+            if (rowNum === HEADER_ROW) {
+                cell.s.font = { bold: true };
+            }
+
+            // Borders only on column headers and data rows
+            if (rowNum >= HEADER_ROW) {
+                cell.s.border = thinBorder;
+                // Ensure the cell exists in the sheet even if it was empty
+                if (!worksheet[addr]) {
+                    worksheet[addr] = cell;
+                } else {
+                    worksheet[addr].s = cell.s;
+                }
+            } else if (worksheet[addr]) {
+                worksheet[addr].s = cell.s;
+            }
+        }
+    }
+
     writeFile(
         workbook,
-        `${data.fileName}.xlsx` || `Siri_${new Date().toISOString().slice(0, 10)}.xlsx`
+        `${data.fileName}.xlsx` || `Siri_${new Date().toISOString().slice(0, 10)}.xlsx`,
+        {
+            cellStyles: true,
+        }
     );
 }
 
 function handlePrint(data) {
-    const workbook = makeWebSheet(data);
+    // Row 0 = form title, Row 1 = empty spacer, Row 2+ = column headers + data rows.
+    // Extract the title and build the worksheet from row 2 onwards so borders only
+    // appear starting at the column-header row.
+    const allRows = data.rows;
+    const formTitle = allRows[0]?.[0] || data.spreadsheetTitle || "";
+    const tableData = { ...data, rows: allRows.slice(2) };
+
+    const workbook = makeWebSheet(tableData);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
     const html = utils.sheet_to_html(worksheet);
+
+    const printDate = new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
 
     const styledHtml = `
         <!doctype html>
         <html>
             <head>
                 <meta charset="utf-8" />
-                <title>${data.spreadsheetTitle || data.sheetName || "Print"}</title>
+                <title> </title>
                 <style>
+                    /*
+                     * margin: 0 on @page removes the browser's built-in
+                     * header/footer area (URL, page title, date, page number).
+                     * Body padding restores the visual margin.
+                     */
                     @page {
                         size: landscape;
-                        margin: 12mm;
+                        margin: 0;
                     }
 
                     body {
                         margin: 0;
-                        padding: 0;
+                        padding: 12mm;
                         font-family: Arial, Helvetica, sans-serif;
                         color: #111;
+                    }
+
+                    .form-title {
+                        font-size: 16px;
+                        font-weight: 700;
+                        margin-bottom: 3px;
+                    }
+
+                    .form-date {
+                        font-size: 11px;
+                        color: #555;
+                        margin-bottom: 10px;
                     }
 
                     table {
@@ -101,8 +207,8 @@ function handlePrint(data) {
                     }
 
                     tr:first-child td {
-                        font-size: 16px;
                         font-weight: 700;
+                        background-color: #f0f0f0;
                     }
 
                     @media print {
@@ -114,6 +220,8 @@ function handlePrint(data) {
                 </style>
             </head>
             <body>
+                <div class="form-title">${formTitle}</div>
+                <div class="form-date">${printDate}</div>
                 ${html}
             </body>
         </html>
